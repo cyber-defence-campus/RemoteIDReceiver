@@ -1,0 +1,124 @@
+<svg width="338px" height="299px" viewBox="0 0 338 299" version="1.1" xmlns="http://www.w3.org/2000/svg"
+>
+    <defs>
+        <filter x="-21.1%" y="-16.2%" width="142.2%" height="148.9%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="19" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="16" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.253679801 0" type="matrix"
+                           in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="52.3238407%" y1="16.1858536%" x2="65.8491301%" y2="52.8668814%" id="linearGradient-2">
+            <stop stop-color="#43464F" offset="0%"></stop>
+            <stop stop-color="#323338" offset="21.7756503%"></stop>
+            <stop stop-color="#2A2B2E" offset="78.4840137%"></stop>
+            <stop stop-color="#454852" offset="100%"></stop>
+        </linearGradient>
+        <radialGradient cx="50%" cy="48.52556%" fx="50%" fy="48.52556%" r="48.5942661%"
+                        gradientTransform="translate(0.500000,0.485256),scale(1.000000,0.998586),rotate(-90.000000),scale(1.000000,0.984674),translate(-0.500000,-0.485256)"
+                        id="radialGradient-3">
+            <stop stop-color="#666871" offset="0%"></stop>
+            <stop stop-color="#D8D8D9" offset="100%"></stop>
+        </radialGradient>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="76.2762914%" id="linearGradient-4">
+            <stop stop-color="#B7C3CF" offset="0%"></stop>
+            <stop stop-color="#F2F2F2" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="0.846730491%" x2="50%" y2="97.5546423%" id="linearGradient-5">
+            <stop stop-color="#E3DFE4" offset="0%"></stop>
+            <stop stop-color="#8F8A8E" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="-21.0207058%" y1="54.2739801%" x2="100%" y2="54.2739801%" id="linearGradient-6">
+            <stop stop-color="#F0EEF3" stop-opacity="0" offset="0%"></stop>
+            <stop stop-color="#B1ADB2" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-3" filter="url(#filter-1)" transform="translate(31.000000, 12.000000)">
+            <g id="Group-2">
+                <g id="Group" transform="translate(187.582456, 2.919918)">
+                    <path d="M0.345294911,33.2938255 L60.2080706,11.8599747 C60.6867458,17.0274948 61.4756481,20.4473749 62.5747776,22.1196152 C63.6739071,23.7918554 66.3901817,25.7440635 70.7236016,27.9762394 L0.345294911,65.9490695 L0.345294911,33.2938255 Z"
+                          id="Path-10" fill="url(#linearGradient-2)"></path>
+                    <ellipse id="Oval-2" stroke-opacity="0.910241168" stroke="#4D5156" fill="#2C2D31" cx="73.6236842"
+                             cy="14.3562628" rx="14.3359649" ry="14.3562628"></ellipse>
+                    <ellipse id="Oval-2-Copy" fill="url(#radialGradient-3)" cx="73.8666667" cy="14.1129363"
+                             rx="11.6631579" ry="11.6796715"></ellipse>
+                </g>
+                <g id="Group-Copy-3"
+                   transform="translate(44.445614, 36.406571) scale(-1, 1) translate(-44.445614, -36.406571) translate(0.445614, 3.406571)">
+                    <path d="M0.345294911,33.2938255 L60.2080706,11.8599747 C60.6867458,17.0274948 61.4756481,20.4473749 62.5747776,22.1196152 C63.6739071,23.7918554 66.3901817,25.7440635 70.7236016,27.9762394 L0.345294911,65.9490695 L0.345294911,33.2938255 Z"
+                          id="Path-10" fill="url(#linearGradient-2)"></path>
+                    <ellipse id="Oval-2" stroke-opacity="0.910241168" stroke="#4D5156" fill="#2C2D31" cx="73.6236842"
+                             cy="14.3562628" rx="14.3359649" ry="14.3562628"></ellipse>
+                    <ellipse id="Oval-2-Copy" fill="url(#radialGradient-3)" cx="73.8666667" cy="14.1129363"
+                             rx="11.6631579" ry="11.6796715"></ellipse>
+                </g>
+                <g id="Group-Copy"
+                   transform="translate(232.554386, 201.566735) scale(1, -1) translate(-232.554386, -201.566735) translate(188.554386, 168.566735)">
+                    <path d="M0.345294911,33.2938255 L60.2080706,11.8599747 C60.6867458,17.0274948 61.4756481,20.4473749 62.5747776,22.1196152 C63.6739071,23.7918554 66.3901817,25.7440635 70.7236016,27.9762394 L0.345294911,65.9490695 L0.345294911,33.2938255 Z"
+                          id="Path-10" fill="url(#linearGradient-2)"></path>
+                    <ellipse id="Oval-2" stroke-opacity="0.910241168" stroke="#4D5156" fill="#2C2D31" cx="73.6236842"
+                             cy="14.3562628" rx="14.3359649" ry="14.3562628"></ellipse>
+                    <ellipse id="Oval-2-Copy" fill="url(#radialGradient-3)" cx="73.8666667" cy="14.1129363"
+                             rx="11.6631579" ry="11.6796715"></ellipse>
+                </g>
+                <g id="Group-Copy-2"
+                   transform="translate(44.445614, 204.000000) scale(-1, -1) translate(-44.445614, -204.000000) translate(0.445614, 171.000000)">
+                    <path d="M0.345294911,33.2938255 L60.2080706,11.8599747 C60.6867458,17.0274948 61.4756481,20.4473749 62.5747776,22.1196152 C63.6739071,23.7918554 66.3901817,25.7440635 70.7236016,27.9762394 L0.345294911,65.9490695 L0.345294911,33.2938255 Z"
+                          id="Path-10" fill="url(#linearGradient-2)"></path>
+                    <ellipse id="Oval-2" stroke-opacity="0.910241168" stroke="#4D5156" fill="#2C2D31" cx="73.6236842"
+                             cy="14.3562628" rx="14.3359649" ry="14.3562628"></ellipse>
+                    <ellipse id="Oval-2-Copy" fill="url(#radialGradient-3)" cx="73.8666667" cy="14.1129363"
+                             rx="11.6631579" ry="11.6796715"></ellipse>
+                </g>
+                <ellipse id="Oval" stroke="#ECF6FC" fill="url(#linearGradient-4)" cx="138.985965" cy="231.160164"
+                         rx="13.6070175" ry="5.83983573"></ellipse>
+                <rect id="Rectangle" stroke="#565656" fill="#333438" x="123.935088" y="230.686858" width="30.1017544"
+                      height="3.3798768" rx="1.6899384"></rect>
+                <polygon id="Path-6" stroke="#C6C7C7" fill="#333438"
+                         points="188.230347 229.379706 176.770658 231.105434 99.8338457 231.105434 88.7546885 229.379706 93.2464934 221.412527 185.515531 224.253405"></polygon>
+                <path d="M188.370387,229.143089 C189.613579,181.23557 190.235175,145.214528 190.235175,121.079962 C190.235175,98.0540785 189.824351,64.2459637 189.002702,19.6556173 C188.976327,18.224285 188.297079,16.089617 186.964956,13.2516134 L183.694737,16.9883802 L183.694737,224.278032 L188.370387,229.143089 Z"
+                      id="Path-8" stroke="#C3C3C3" fill="#333438"></path>
+                <path d="M91.1774049,229.143089 C92.4205965,181.23557 93.0421923,145.214528 93.0421923,121.079962 C93.0421923,98.0364116 92.6307374,64.1940779 91.8078276,19.5529606 C91.7818534,18.143914 90.6720507,15.8396148 88.4784196,12.6400631 L86.5017544,16.9883802 L86.5017544,224.278032 L91.1774049,229.143089 Z"
+                      id="Path-8-Copy" stroke="#C3C3C3" fill="#333438"
+                      transform="translate(89.771973, 120.891576) scale(-1, 1) translate(-89.771973, -120.891576) "></path>
+                <polygon id="Path-9" fill="#333438"
+                         points="188.092075 228.103369 187.688095 228.918558 185.638596 227.020441 187.688095 225.806982"></polygon>
+                <polygon id="Path-9-Copy" fill="#333438"
+                         transform="translate(89.672353, 227.849423) scale(-1, 1) translate(-89.672353, -227.849423) "
+                         points="90.8990922 228.590022 90.4951122 229.405211 88.445614 227.507094 90.4951122 226.293634"></polygon>
+                <path d="M175.63154,3.06986831 C158.118834,1.02328944 144.992542,0 136.252665,0 C127.512787,0 115.527659,1.02328944 100.297281,3.06986831 C97.4066891,4.16635326 95.3849058,5.31372727 94.231931,6.51199033 C93.0789561,7.7102534 91.7287251,10.0673446 90.1812379,13.5832641 C88.7001787,60.7602173 87.9596491,96.2505345 87.9596491,120.054216 C87.9596491,143.857897 88.7001787,179.465277 90.1812379,226.876356 L100.297281,228.792934 L175.63154,228.792934 L187.043916,226.876356 C187.921047,178.592476 188.359612,142.353476 188.359612,118.159356 C188.359612,93.9652362 187.921047,59.1065388 187.043916,13.5832641 C184.735299,10.0405809 182.945154,7.68348966 181.673482,6.51199033 C180.40181,5.34049101 178.38783,4.193117 175.63154,3.06986831 Z"
+                      id="Path-2" fill="url(#linearGradient-5)"></path>
+                <path d="M176.405263,2.91991786 L176.405263,228.25662 L187.132223,226.403167 C188.157099,178.204984 188.669537,141.972954 188.669537,117.70708 C188.669537,93.4412047 188.157099,58.630556 187.132223,13.2751334 C185.076484,10.1471218 183.410243,7.96686836 182.133502,6.73437295 C180.856761,5.50187754 178.947348,4.23039251 176.405263,2.91991786 Z"
+                      id="Path-3" fill="url(#linearGradient-6)"></path>
+                <path d="M87.9596491,3.40657084 L87.9596491,228.743273 L97.95841,226.867557 C99.4687517,178.684216 100.223923,142.459607 100.223923,118.193733 C100.223923,93.9278577 99.4687517,59.1270436 97.95841,13.7912905 C96.3831463,10.0472514 94.957144,7.55898412 93.680403,6.32648871 C92.4036619,5.0939933 90.496744,4.12068734 87.9596491,3.40657084 Z"
+                      id="Path-3-Copy" fill="url(#linearGradient-6)"
+                      transform="translate(94.091786, 116.074922) scale(-1, 1) translate(-94.091786, -116.074922) "></path>
+            </g>
+            <polygon id="Path-11" fill-opacity="0.317566803" fill="#D8D8D8"
+                     points="246 16 246 19.8912348 189.874682 43 189 36.2965934"></polygon>
+            <polygon id="Path-11-Copy-2" fill-opacity="0.317566803" fill="#D8D8D8"
+                     transform="translate(218.500000, 208.500000) scale(1, -1) translate(-218.500000, -208.500000) "
+                     points="247 195 247 198.90988 190 222 190 215.393844"></polygon>
+            <polygon id="Path-11-Copy-3" fill-opacity="0.317566803" fill="#D8D8D8"
+                     transform="translate(58.500000, 211.000000) scale(-1, -1) translate(-58.500000, -211.000000) "
+                     points="87 197 87 200.994526 30 225 30 217.83536"></polygon>
+            <polygon id="Path-11-Copy" fill-opacity="0.317566803" fill="#D8D8D8"
+                     transform="translate(58.500000, 31.000000) scale(-1, 1) translate(-58.500000, -31.000000) "
+                     points="87 17 87 21.0046701 30 45 30 37.8882696"></polygon>
+            <polygon id="Path-12" fill="#3D4148" points="257 31.8497851 190 68 190 62.6244365 253.230744 30"></polygon>
+            <polygon id="Path-12-Copy" fill="#3D4148"
+                     transform="translate(53.500000, 49.000000) scale(-1, 1) translate(-53.500000, -49.000000) "
+                     points="87 31.8497851 20 68 20 62.6244365 83.230744 30"></polygon>
+            <polygon id="Path-12-Copy-2" fill="#3D4148"
+                     transform="translate(53.500000, 192.000000) scale(-1, -1) translate(-53.500000, -192.000000) "
+                     points="87 174.849785 20 211 20 205.624437 83.230744 173"></polygon>
+            <polygon id="Path-12-Copy-3" fill="#3D4148"
+                     transform="translate(223.500000, 188.000000) scale(1, -1) translate(-223.500000, -188.000000) "
+                     points="257 170.849785 190 207 190 201.624437 253.230744 169"></polygon>
+        </g>
+    </g>
+</svg>

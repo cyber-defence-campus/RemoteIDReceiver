@@ -1,0 +1,42 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Drone Monitoring System</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/drone.css">
+    <link rel="stylesheet" href="css/interface.css">
+
+    <meta name="theme-color" content="#fafafa">
+</head>
+<body>
+
+<div id="app"></div>
+
+<script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+            "vue3-google-map": "https://unpkg.com/vue3-google-map@0.15.0/dist/es/index.js",
+            "vue-demi": "https://unpkg.com/vue-demi@0.14.0/lib/index.mjs",
+            "@vue/devtools-api": "https://unpkg.com/@vue/devtools-api@6.5.0/lib/esm/index.js",
+            "pinia": "https://unpkg.com/pinia@2.0.35/dist/pinia.esm-browser.js"
+        }
+    }
+</script>
+<script type="module">
+    import {createApp} from "vue"
+    import {createPinia} from "pinia"
+    import App from "./js/App.js"
+
+    const app = createApp(App)
+    const pinia = createPinia()
+    app.use(pinia)
+    app.mount("#app")
+</script>
+</body>
+</html>

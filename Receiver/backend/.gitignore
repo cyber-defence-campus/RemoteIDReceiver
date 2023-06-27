@@ -1,0 +1,8 @@
+# InelliJ IDEA files
+*.iml
+*.ipr
+*.ids
+*.iws
+.idea/
+
+test.db

@@ -1,0 +1,136 @@
+::-webkit-scrollbar {
+    display: none;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-weight: bold;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.panel {
+    background: white;
+    border-radius: 2px;
+    margin: 10px;
+    padding: 0.5rem;
+}
+
+.panel.scrollable {
+    max-height: 50%;
+    overflow-y: auto;
+}
+
+.panel button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 25%;
+}
+
+.panel button:hover,
+.panel button.active {
+    background-color: #ff822d33;
+}
+
+/* drone list */
+
+.drone-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.drone-list ul li {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+.drone-list ul li:hover {
+    background-color: #EBEBEB;
+}
+
+.drone-list ul li.selected {
+    background-color: #e0e0e0;
+}
+
+.drone-list .table {
+    display: grid;
+    grid-template-columns: auto repeat(5, 1fr);
+    grid-gap: 0.5rem;
+    justify-items: center;
+    font-size: 0.75rem;
+}
+
+.drone-list .table :nth-child(6),
+.drone-list .table :first-child {
+    justify-self: left;
+}
+
+.drone-list .table .title {
+    padding: 0;
+}
+
+.drone-list .table .focused {
+    text-decoration: underline;
+}
+
+/* drone-name */
+
+.panel.drone-name {
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.panel.drone-name:before {
+    content: '';
+    position: absolute;
+    border-right: 0.5rem solid transparent;
+    border-left: 0.5rem solid transparent;
+    border-bottom: 0.5rem solid white;
+    top: -0.5rem;
+    left: calc(50% - 0.25rem);
+}
+
+/* drone info */
+
+.drone-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 0.5rem;
+    white-space: nowrap;
+    cursor: text;
+}
+
+.drone-info > div:nth-child(odd) {
+    text-align: right;
+}
+
+.drone-info > div:nth-child(odd)::after {
+    content: ":"
+}
+
+.drone-info > div:nth-child(even) {
+    text-align: left;
+}
+
+.drone-info ul {
+    margin: 0;
+    padding: 0;
+}
+
+.drone-info li {
+    list-style: none;
+}

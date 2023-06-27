@@ -1,0 +1,11 @@
+[Unit]
+Description=Drone sniffing service
+After=network.target
+
+[Service]
+ExecStart=python3 /opt/dsniffer/backend/dronesniffer/main.py -p $PORT
+WorkingDirectory=/opt/dsniffer
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
