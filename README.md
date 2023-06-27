@@ -18,6 +18,7 @@ The system was tested on a Raspberry Pi 4, therefore, installation instructions 
 - a Raspberry Pi 4
 - Raspberry Pi Imager [download link](https://www.raspberrypi.com/software/)
 - working internet connection (e.g., WLAN)
+- WLAN adapter with promiscous/monitor mode capabilities
 
 **Note:** This installation instruction was written using version 1.7.5 of the 
 Raspberry Pi Imager for Windows.
@@ -61,15 +62,15 @@ available via < host >.local in the browser.
 Whenever a browser accesses the application for the first time, a setup 
 view appears (see below), requesting a google maps key.
 
-![Setup vew](workspace/resources/images/setupview.png "Setup view")
+![Setup view](Receiver/resources/images/setupview.png "Setup view")
 
 After the google maps key is accepted a map appears with multipl controls. The 
-picture below displays this view (monitor view). To start monitoring 
-an interface has to be chosen via the Settings (in the top left corner) 
+picture below displays this view (monitor view). To start monitoring, 
+an WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) 
 and saved. Since it is a google maps beneath, two map options (Regular and 
 Satellite) above the Settings are available.
 
-![Monitor view of active system displaying both map options - Regular and Sattelite](workspace/resources/images/monitorview.png "Monitor view")
+![Monitor view of active system displaying both map options - Regular and Sattelite](Receiver/resources/images/monitorview.png "Monitor view")
 
 Actively monitored drones are listed in the list in the bottem left corner. 
 Optionally the flown path of the drone as well as the pilot location 
@@ -82,14 +83,13 @@ displayed in the metrics data of the drone. This can be opened by either
 clicking on a drone or via the "Active Drones" list and clicking the 
 metrics-emoji.
 
-![Replay view](workspace/resources/images/replayview.png "Replay view")
+![Replay view](Receiver/resources/images/replayview.png "Replay view")
 
 The application has also a built-in spoofing detection mechanism, which 
 checks the distance from the pilot to the drone. If it is above 15 km, the 
 drone will be marked with an exclamation mark, which can be seen in the 
 picture below.
 
-![Spoofed drone](workspace/resources/images/spoofingdetection.png "Detected spoofed drone")
+![Spoofed drone](Receiver/resources/images/spoofingdetection.png "Detected spoofed drone")
 
-For further instructions please read Section 5.2.2 of [the Bachelor thesis](report/FS23_rema_203.pdf).
-
+For further instructions please read Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
