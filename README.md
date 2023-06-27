@@ -7,7 +7,7 @@ This repository is the public repository for the Bachelor Thesis on a "Building 
 This system was developed to monitor drones via Remote IDs. The 
 system supports DJI's proprietary format as well as the ASD-STAN format. 
 It currently monitors drones via Remote IDs transmitted over Wi-Fi. It is designed to 
-be easily extended and can be easily extended by additional formats as well as 
+be easily extended with additional formats as well as 
 sniffing types.
 
 **Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated.
@@ -18,7 +18,7 @@ sniffing types.
 - [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
 
 ## Installation on Raspi 4
-The system was tested on a Raspberry Pi 4, therefore, installation instructions are provided for this. It is intended to be used any Linux distribution. The installation requires the following:
+The system was tested on a Raspberry Pi 4, therefore, installation instructions are provided for this. It is intended to be used with any Linux distribution. The installation requires the following:
 - a Device to read SD-cards (e.g., Laptop)
 - a Raspberry Pi 4
 - Raspberry Pi Imager [download link](https://www.raspberrypi.com/software/)
@@ -69,7 +69,7 @@ view appears (see below), requesting a google maps key.
 
 ![Setup view](Receiver/resources/images/setupview.png "Setup view")
 
-After the google maps key is accepted a map appears with multipl controls. The 
+After the google maps key is accepted a map appears with multiple controls. The 
 picture below displays this view (monitor view). To start monitoring, 
 an WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) 
 and saved. Since it is a google maps beneath, two map options (Regular and 
@@ -77,10 +77,10 @@ Satellite) above the Settings are available.
 
 ![Monitor view of active system displaying both map options - Regular and Sattelite](Receiver/resources/images/monitorview.png "Monitor view")
 
-Actively monitored drones are listed in the list in the bottem left corner. 
+Actively monitored drones are listed in the list in the bottom left corner. 
 Optionally the flown path of the drone as well as the pilot location 
 ("P"-pin) and the starting point (home location, "H"-pin). Each drone 
-receives its own colour distinguish the different drones. To display drone details, 
+receives its own colour to distinguish the different drones. To display drone details, 
 simply click on the drone.
 
 An already completed flight of a drone can be replayed by the "play"-button 
