@@ -12,6 +12,9 @@ sniffing types.
 
 **Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated.
 
+
+**Note:** A spoofer program,  which is able to spoof fake Remote ID information is kept in a separate repository. The spoofed Remote IDs can be DJI's proprietary format as well as the ASD-STAN format and can be used to test the drone monitoring system in this repository.
+
 ## Authors
 - [Fabia Müller](https://github.com/alessmlr), Zurich University of Applied Sciences
 - [Sebastian Brunner](https://github.com/Wernerson),Zurich University of Applied Sciences
@@ -96,5 +99,8 @@ drone will be marked with an exclamation mark, which can be seen in the
 picture below.
 
 ![Spoofed drone](Receiver/resources/images/spoofingdetection.png "Detected spoofed drone")
+### ToDo
++ More robust spoofing detection mechanism (current detection mechanism can be easily bypassed by a spoofer) 
+
 
 For further instructions please read Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
