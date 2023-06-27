@@ -12,6 +12,11 @@ sniffing types.
 
 **Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated.
 
+## Authors
+- [Fabia Müller](https://github.com/alessmlr), Zurich University of Applied Sciences
+- [Sebastian Brunner](https://github.com/Wernerson),Zurich University of Applied Sciences
+- [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
+
 ## Installation on Raspi 4
 The system was tested on a Raspberry Pi 4, therefore, installation instructions are provided for this. It is intended to be used any Linux distribution. The installation requires the following:
 - a Device to read SD-cards (e.g., Laptop)
