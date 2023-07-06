@@ -1,5 +1,5 @@
 # Drone Remote ID Monitoring System
-This repository is the public repository for the Bachelor Thesis on a "Building an Accessible and Affordable Drone Monitoring System Based on Remote ID". It contains code and documents related to the web application developed as part of a bachelor's thesis. The contents are organized as follows:
+This repository is the public repository for the Bachelor Thesis on a "Building an Accessible and Affordable Drone Monitoring System Based on Remote ID". It contains code and documents related to the web application developed as part of this bachelor's thesis. The contents are organized as follows:
 
 + The **Bachelor_Thesis.pdf** is the final report of the project.
 + The **Receiver** folder contains all the code for the developed web application.
@@ -16,54 +16,27 @@ sniffing types.
 **Note:** A spoofer program,  which is able to spoof fake Remote ID information is kept in a separate repository. The spoofed Remote IDs can be DJI's proprietary format as well as the ASD-STAN format and can be used to test the drone monitoring system in this repository.
 
 ## Authors
+The work in this project was  done by:
 - [Fabia Müller](https://github.com/alessmlr), Zurich University of Applied Sciences
 - [Sebastian Brunner](https://github.com/Wernerson),Zurich University of Applied Sciences
+
+and supervised by:
+- [Prof. Dr. Marc Rennhard](https://github.com/rennhard),  Zurich University of Applied Sciences
 - [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
+  
+## Installation 
+The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit.
 
-## Installation on Raspi 4
-The system was tested on a Raspberry Pi 4, therefore, installation instructions are provided for this. It is intended to be used with any Linux distribution. The installation requires the following:
-- a Device to read SD-cards (e.g., Laptop)
-- a Raspberry Pi 4
-- Raspberry Pi Imager [download link](https://www.raspberrypi.com/software/)
-- working internet connection (e.g., WLAN)
-- WLAN adapter with promiscous/monitor mode capabilities
+Execute install script with
 
-**Note:** This installation instruction was written using version 1.7.5 of the 
-Raspberry Pi Imager for Windows.
-
-Steps:
-1. Start Raspberry Pi Imager
-2. Install OS Lite 64 bit on SD-card with the following settings:
-   - set hostname: <host>
-   - enable ssh (use pw authentication for simplicity)
-   - set username and password: <user>, <pw>
-   - configure Wireless LAN: <ssid>
-   - (optionally) set locale settings: <timezone> and <keyboard layout>
-3. Insert SD into Raspberry Pi 4
-4. Connect Raspberry Pi 4 to power (compatible power source)
-5. Connect your machine to same WLAN as Raspberry Pi 4
-6. Connect to Raspberry Pi 4 via ssh 
-
-    (may take afew minutes for raspi to be connected with wlan and be ready)
-
-    ```bash
-    ssh <usern>@<host>.local / <pw>
    ```
-7. Download code from this Repository
-8. Execute install script with
-
-    ```bash
     sudo sh install.sh
-   ``` 
-   OR make install script executable and run it with 
-    ```bash
-   sudo ./install.sh
-   ``` 
+   ```
+ 
    (This step requires a working internet connection)
 
-After the installation script is through, the application should be 
-available via < host >.local in the browser.
-
+After the installation script is through, the sniffer service will start and the web application should be 
+available via <host>.local in the browser, accessible from any device connected to the same network.
 
 ## Usage
 
@@ -93,14 +66,5 @@ metrics-emoji.
 
 ![Replay view](Receiver/resources/images/replayview.png "Replay view")
 
-The application has also a built-in spoofing detection mechanism, which 
-checks the distance from the pilot to the drone. If it is above 15 km, the 
-drone will be marked with an exclamation mark, which can be seen in the 
-picture below.
 
-![Spoofed drone](Receiver/resources/images/spoofingdetection.png "Detected spoofed drone")
-### ToDo
-+ More robust spoofing detection mechanism (current detection mechanism can be easily bypassed by a spoofer) 
-
-
-For further instructions please read Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
+For further instructions please read the [Wiki](https://github.com/cyber-defence-campus/RemoteIDReceiver/wiki) or Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
