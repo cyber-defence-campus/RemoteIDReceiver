@@ -10,7 +10,7 @@ It currently monitors drones via Remote IDs transmitted over Wi-Fi. It is design
 be easily extended with additional formats as well as 
 sniffing types.
 
-**Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated.
+**Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated. It is a  proof of concept and is not intended for production use. The authors do not take any responsibility or liability for the use of the software. Please exercise caution and use at your own risk.
 
 
 **Note:** A spoofer program,  which is able to spoof fake Remote ID information is kept in a separate repository. The spoofed Remote IDs can be DJI's proprietary format as well as the ASD-STAN format and can be used to test the drone monitoring system in this repository.
