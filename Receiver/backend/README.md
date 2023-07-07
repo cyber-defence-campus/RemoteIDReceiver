@@ -1,11 +1,3 @@
-## start application
-for more details: check
-[README.md](https://github.com/cyber-defence-campus/2023_Mueller-Fabia_Brunner-Sebastian_DroneID-Monitoring/blob/main/workspace/README.md) 
-in directory `/workspace`.
-
-1. In terminal, navigate to subdirectory `/workspace`.
-2. run command: `./backend/dronesniffer/run-demo.sh` OR `./backend/dronesniffer/run-demo.sh -i <interface-name>`
-
 ## Coding rules
 
 ### Format of docstring
