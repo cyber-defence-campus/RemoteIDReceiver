@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     arg_parser = argparse.ArgumentParser(prog="Super cool Drone Monitor System")
     arg_parser.add_argument("-p", "--port", help="port", type=int, default=8080)
     arg_parser.add_argument("-f", "--file", help="pcap file name")
-    arg_parser.add_argument("-l", "--lte", action="store_true", help="sniff on lte")
+    #arg_parser.add_argument("-l", "--lte", action="store_true", help="sniff on lte")
     return arg_parser.parse_args()
 
 
