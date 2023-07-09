@@ -25,6 +25,7 @@ and supervised by:
 - [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
   
 ## Installation 
+### System Install
 The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit.
 
 Execute install script with
@@ -37,6 +38,37 @@ Execute install script with
 
 After the installation script is through, the sniffer service will start and the web application should be 
 available via <host>.local in the browser, accessible from any device connected to the same network.
+
+### Docker Container
+The supplied Dockerfile will setup an environment pre-configured to work with the project code, this container should for both x86_64 and arm64 architectures.
+
+#### Building Container
+From the `Receiver` directory:
+```
+docker build -t dsniffer .
+```
+#### Running Container
+```
+docker run -it --rm \
+	--name=dsniffer \
+	--cap-add=NET_ADMIN \
+	--net=host \
+	-e PORT=8080 \
+	dsniffer
+```
+The above example will:
+* `-it`: start the container in interactive mode
+* `--rm`: remove container after exit
+* `--name`: name of the container
+* `--cap-add:NET_ADMIN`: give the container network device access from host (needed for wifi sniffing)
+* `--net=host`: needed for host wifi device access
+* `-e PORT`: define the PORT environment variable, this is the port the application will run on and be accessible at from the host ip
+
+Note you can change these flags, for example:
+`-d` instead of `-it` to run the container in daemon mode
+
+The docker container currently does not mount `config.json` outside of the container, this means you need to configure the app each time you start the container. This could be added with a `-v` flag like this:
+`-v $PWD/config.json:/opt/dsniffer/backend/dronesniffer/config.json`
 
 ## Usage
 
