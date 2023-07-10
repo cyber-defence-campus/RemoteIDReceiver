@@ -8,7 +8,7 @@ from drone_sniffer import filter_frames
 
 __all__ = ["sniff_manager"]
 
-from lte.lte_sniffer import lte_sniffer
+#from lte.lte_sniffer import lte_sniffer
 
 
 def switch_dev_mode(device: str, mode: str) -> bool:
@@ -116,7 +116,7 @@ class WiFiFileSniffer:
         logging.info(f"Stop parsing file {self.filename}")
         self.sniffer.stop()
 
-
+'''
 class LteFileSniffer:
     """
     Parses a file containing LTE data and forwards the parsed packets to the handler.
@@ -149,7 +149,7 @@ class LteFileSniffer:
         logging.info(f"Stop parsing file {self.filename}")
         self.stop_event.set()
         self.sniffer.join()
-
+'''
 
 class SniffManager:
     """
@@ -222,8 +222,9 @@ class SniffManager:
             lte (bool): If lte extension is used.
         """
         if lte:
-            logging.info("Creating LTE Sniffer...")
-            sniffer = LteFileSniffer(filename)
+            #logging.info("Creating LTE Sniffer...")
+            logging.info(" LTE Sniffer not ready...")
+            #sniffer = LteFileSniffer(filename)
         else:
             logging.info("Creating Wi-Fi Sniffer...")
             sniffer = WiFiFileSniffer(filename)
