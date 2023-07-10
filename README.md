@@ -24,8 +24,9 @@ and supervised by:
 - [Prof. Dr. Marc Rennhard](https://github.com/rennhard),  Zurich University of Applied Sciences
 - [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
   
-## Installation 
-The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit.
+## Installation
+
+The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04
 
 Execute install script with
 
@@ -41,7 +42,9 @@ available via <host>.local in the browser, accessible from any device connected 
 ## Usage
 
 Whenever a browser accesses the application for the first time, a setup 
-view appears (see below), requesting a google maps key.
+view appears (see below), requesting a google maps key ([see how to get you Google Maps API](https://developers.google.com/maps/documentation/javascript/get-api-key)). 
+
+**Note** Some browser might not show the GUI propery. See section **Brower Issues** for known issues.
 
 ![Setup view](Receiver/resources/images/setupview.png "Setup view")
 
@@ -68,3 +71,10 @@ metrics-emoji.
 
 
 For further instructions please read the [Wiki](https://github.com/cyber-defence-campus/RemoteIDReceiver/wiki) or Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
+
+
+### Browser issues
+During the tests different clients were tested, including laptops and an iPad Air 4th Generation as well as different browsers which successfully worked. Minor issues were noted:
+
+- Ubuntu laptop running **Mozilla Firefox 103.0.1** did not load the inital view for configuring the Google API.
+- iPad running **Safari** showed minor graphic isseus with the drone path.

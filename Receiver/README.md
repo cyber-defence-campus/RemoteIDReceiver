@@ -1,10 +1,10 @@
 ## Run Application
 
-The application can be manually started by restarting the `dsniffer.service` service or running the python script `/backend/dronesniffer/main.py`. 
+The application can be manually started by restarting the `dsniffer.service` service or running the python script `opt/dsniffer/backend/dronesniffer/main.py`. 
 
 Run python script:
 ```bash
-python3 /backend/dronesniffer/main.py -p 80
+sudo python3 ./backend/dronesniffer/main.py -p 80
 ```
 
 or restart service:

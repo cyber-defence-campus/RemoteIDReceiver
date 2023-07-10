@@ -21,7 +21,7 @@ statement will be made:
 
 **_WARNING:_**
 to successfully run the tests on the command line, one has to be in the 
-subdirectory `/workspace` (there are some relative paths, that otherwise 
+subdirectory `/Receiver` (there are some relative paths, that otherwise 
 will not work).
 
 tests are written with unittest and pytest. the structure is based on the Arrange-Act-Assert pattern. To run all tests

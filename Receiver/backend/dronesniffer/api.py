@@ -275,4 +275,4 @@ def get_interfaces() -> list[str]:
 
 
 # needs to be last because it's a catch all
-app.mount("/", StaticFiles(directory="./frontend"), name="static")
+app.mount("/", StaticFiles(directory="./frontend/"), name="static")
