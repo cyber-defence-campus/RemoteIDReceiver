@@ -268,8 +268,8 @@ class DjiParser(Parser):
     _version_2_lte_format = _version_2_format + 'H'
     lte_max_len = 89
 
-    oui: str = ["60:60:1F", "48:1C:B9", "34:D2:62"]
     spoofed_oui = "26:37:12"
+    oui: str = ["60:60:1F", "48:1C:B9", "34:D2:62", spoofed_oui]
 
     @staticmethod
     def _to_coordinate(val: int) -> float:
