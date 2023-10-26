@@ -32,7 +32,7 @@ apt -y install python3 python3-pip libatlas-base-dev
 
 # Install python dependencies
 echo "Installing dependencies..."
-pip install -r ./requirements.txt
+pip3 install -r ./requirements.txt
 
 # copy repository files
 echo "Installing dsniffer into /opt/dsniffer..."
