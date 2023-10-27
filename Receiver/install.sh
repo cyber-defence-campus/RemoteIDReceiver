@@ -25,15 +25,6 @@ PORT=${PORT:-80}
 export PORT
 echo "Using port $PORT"
 
-# Install python and pip
-
-echo "Installing python and pip..."
-apt -y install python3 python3-pip libatlas-base-dev
-
-# Install python dependencies
-echo "Installing dependencies..."
-pip3 install -r ./requirements.txt
-
 # copy repository files
 echo "Installing dsniffer into /opt/dsniffer..."
 mkdir -p /opt/dsniffer
