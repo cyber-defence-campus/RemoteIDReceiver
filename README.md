@@ -28,16 +28,21 @@ and supervised by:
 
 The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04
 
+From `Receiver/` install requirements with
+```
+sudo pip3 install -r ./requirements.txt
+```
+   (This step requires a working internet connection)
+
 Execute install script with
 
    ```
     sudo sh install.sh
    ```
  
-   (This step requires a working internet connection)
-
 After the installation script is through, the sniffer service will start and the web application should be 
 available via <host>.local in the browser, accessible from any device connected to the same network.
+
 
 ## Usage
 
@@ -72,9 +77,18 @@ metrics-emoji.
 
 For further instructions please read the [Wiki](https://github.com/cyber-defence-campus/RemoteIDReceiver/wiki) or Section 5.2.2 of [the Bachelor thesis](Bachelor_Thesis_Drone_Monitoring_System.pdf).
 
-
+## Troubleshooting
 ### Browser issues
 During the tests different clients were tested, including laptops and an iPad Air 4th Generation as well as different browsers which successfully worked. Minor issues were noted:
 
 - Ubuntu laptop running **Mozilla Firefox 103.0.1** did not load the inital view for configuring the Google API.
 - iPad running **Safari** showed minor graphic isseus with the drone path.
+
+### Error when installing requirements.txt
+With a newer version of `pip` we encountered the following error when running `pip3 install -r requirements.txt`:
+
+`error: externally-managed-environment`
+
+Executing the following command solved it, but we did not investigate further:
+
+`sudo mv /usr/lib/python3.11/EXTERNALLY-MANAGED /usr/lib/python3.11/EXTERNALLY-MANAGED.old`
