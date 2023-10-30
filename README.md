@@ -26,7 +26,7 @@ and supervised by:
   
 ## Installation
 
-The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04
+The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04. Make sure you have `python` and `pip` installed.
 
 From `Receiver/` install requirements with
 ```
