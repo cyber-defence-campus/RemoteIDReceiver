@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
     arg_parser = argparse.ArgumentParser(prog="Super cool Drone Monitor System")
     arg_parser.add_argument("-p", "--port", help="port", type=int, default=80)
     arg_parser.add_argument("-f", "--file", help="pcap file name")
-    #arg_parser.add_argument("-l", "--lte", action="store_true", help="sniff on lte")
+    arg_parser.add_argument("-l", "--lte", action="store_true", help="sniff on lte")
     return arg_parser.parse_args()
 
 
@@ -38,7 +38,8 @@ def main():
     args = parse_args()
     port: int = args.port
     file: str = args.file
-    #lte: bool = args.lte
+    lte: bool = args.lte
+    lte = None ## Not implemented yet
 
     logging.info("Setting up database...")
     setup_database()
@@ -47,9 +48,9 @@ def main():
     atexit.register(shutdown)
 
     try:
-        if file:  #or lte:
+        if file or lte:
             logging.info(f"Started with file argument, starting parsing of {file}")
-            sniff_manager.parse_file(file) #, lte=lte)
+            sniff_manager.parse_file(file, lte=lte)
 
         logging.info("Starting sniff manager...")
         settings = get_settings()
