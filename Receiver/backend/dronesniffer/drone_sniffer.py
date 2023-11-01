@@ -21,23 +21,23 @@ def filter_frames(packet: Packet) -> None:
     Args:
         packet (Packet): Wi-Fi frame.
     """
-    if packet.haslayer(Dot11Beacon):  # Monitor 802.11 beacon traffic
-        if packet.haslayer(Dot11EltVendorSpecific):  # check vendor specific ID -> 221
-            vendor_spec: Dot11EltVendorSpecific = packet.getlayer(Dot11EltVendorSpecific)
-            while vendor_spec:
-                layer_oui = Parser.dec2hex(vendor_spec.oui)
-                if handler.is_drone(layer_oui):
-                    # parse header
-                    remote_id = handler.parse(vendor_spec.info, layer_oui)
-                    if remote_id:
-                        serial = remote_id.serial_number
-                        logging.info(f"Parsed Remote ID with serial number for: {serial}")
+    #if packet.haslayer(Dot11Beacon):  # Monitor 802.11 beacon traffic
+    if packet.haslayer(Dot11EltVendorSpecific):  # check vendor specific ID -> 221
+        vendor_spec: Dot11EltVendorSpecific = packet.getlayer(Dot11EltVendorSpecific)
+        while vendor_spec:
+            layer_oui = Parser.dec2hex(vendor_spec.oui)
+            if handler.is_drone(layer_oui):
+                # parse header
+                remote_id = handler.parse(vendor_spec.info, layer_oui)
+                if remote_id:
+                    serial = remote_id.serial_number
+                    logging.info(f"Parsed Remote ID with serial number for: {serial}")
 
-                        remote_id.add_home_loc(home_locations)
-                        logging.info(f"Remote ID: {remote_id}")
+                    remote_id.add_home_loc(home_locations)
+                    logging.info(f"Remote ID: {remote_id}")
 
-                        save_drone_info(remote_id)
-                    break
-                else:
-                    vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(Dot11EltVendorSpecific)
-                    continue
+                    save_drone_info(remote_id)
+                break
+            else:
+                vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(Dot11EltVendorSpecific)
+                continue

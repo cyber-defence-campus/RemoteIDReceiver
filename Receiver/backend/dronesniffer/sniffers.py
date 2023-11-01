@@ -1,9 +1,9 @@
 import logging
 import os
 from threading import Thread, Event
-
+from scapy.layers.dot11 import Dot11Elt,Dot11EltVendorSpecific
 from scapy.sendrecv import AsyncSniffer
-
+from scapy.config import conf
 from drone_sniffer import filter_frames
 
 __all__ = ["sniff_manager"]
@@ -48,7 +48,8 @@ class WiFiInterfaceSniffer:
         self.interface = interface
         self.sniffer = AsyncSniffer(
             iface=interface,
-            prn=filter_frames,
+            filter="type mgt subtype beacon",
+            prn=filter_frames
         )
 
     def start(self) -> bool:
@@ -95,6 +96,7 @@ class WiFiFileSniffer:
         self.filename = filename
         self.sniffer = AsyncSniffer(
             offline=filename,
+            filter="type mgt subtype beacon",
             prn=filter_frames
         )
 
@@ -174,8 +176,9 @@ class SniffManager:
         """
         # remove existing sniffer for that interface
         self.stop(interface)
-
+        print("Gonna setup WiFiInterfaceSniffer")
         sniffer = WiFiInterfaceSniffer(interface)
+        print("Success in setting WiFI Interface Sniffer")
         success = sniffer.start()
         if success:
             self.sniffers[interface] = sniffer
