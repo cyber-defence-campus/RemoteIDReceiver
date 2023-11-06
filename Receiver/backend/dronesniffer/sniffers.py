@@ -48,7 +48,6 @@ class WiFiInterfaceSniffer:
         self.interface = interface
         self.sniffer = AsyncSniffer(
             iface=interface,
-            filter="type mgt subtype beacon",
             prn=filter_frames
         )
 
@@ -96,7 +95,6 @@ class WiFiFileSniffer:
         self.filename = filename
         self.sniffer = AsyncSniffer(
             offline=filename,
-            filter="type mgt subtype beacon",
             prn=filter_frames
         )
 
