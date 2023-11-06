@@ -28,36 +28,40 @@ and supervised by:
 
 The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04. Make sure you have `python` and `pip` installed.
 
-From `Receiver/` install requirements with
+From `Receiver/` folder install the requirements with
 ```
 sudo pip3 install -r ./requirements.txt
 ```
    (This step requires a working internet connection)
 
-Execute install script with
+To start the application run the python script (port 80 by default):
+
+```
+sudo python3 ./backend/dronesniffer/main.py -p 80
+```
+
+This will start the web application on port 80.
+
+The receiver app can also be run at boot time by enabling `dsniffer.service`,  which runs the main python script. To run the service at boot time execute the following command
 
    ```
-    sudo sh install.sh
+    sudo sh install_service.sh
    ```
  
-After the installation script is through, the sniffer service will start and the web application should be 
-available via <host>.local in the browser, accessible from any device connected to the same network.
+This script copies the receiver files into `/opt/dsniffer/` and enables the service to be run at boot time. 
 
 
 ## Usage
 
-Whenever a browser accesses the application for the first time, a setup 
-view appears (see below), requesting a google maps key ([see how to get you Google Maps API](https://developers.google.com/maps/documentation/javascript/get-api-key)). 
+From the browser, access the ip address of the receiver machine on the specified port. Whenever a client browser accesses the application for the first time, a setup view appears (see below), requesting a google maps key ([see how to get you Google Maps API](https://developers.google.com/maps/documentation/javascript/get-api-key)). 
 
-**Note** Some browser might not show the GUI propery. See section **Brower Issues** for known issues.
+**Note** Some browser might not show the GUI properly. See section **Brower Issues** for known issues.
 
 ![Setup view](Receiver/resources/images/setupview.png "Setup view")
 
 After the google maps key is accepted a map appears with multiple controls. The 
 picture below displays this view (monitor view). To start monitoring, 
-an WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) 
-and saved. Since it is a google maps beneath, two map options (Regular and 
-Satellite) above the Settings are available.
+a WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) and saved.
 
 ![Monitor view of active system displaying both map options - Regular and Sattelite](Receiver/resources/images/monitorview.png "Monitor view")
 
