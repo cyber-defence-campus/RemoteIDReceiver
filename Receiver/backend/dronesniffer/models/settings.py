@@ -14,7 +14,7 @@ class Settings(BaseModel):
         interfaces (list[str]): Name of all interfaces that are sniffed.
         performance_mode (bool): Repress animations and simplify UI when performance mode is on.
     """
-    google_maps_api_key: Optional[str]
+    google_maps_api_key: Optional[str] = None
     activity_offset_in_m: int = 10
     drone_size_in_rem: int = 5
     interfaces: list[str] = []
