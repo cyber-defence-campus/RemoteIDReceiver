@@ -14,6 +14,64 @@ sniffing types.
 
 The system is meant to run in any Linux distribution. We tested it on a Raspberry Pi 4 running a Lite OS 64-bit and on an Ubuntu 22.04. Make sure you have `python` and `pip` installed. 
 
+## Important 
+
+If you are intending on installing on a Raspberry Pi you will need to enable a method of Wlan monitoring. This can be done via software or via hardware. The hardware option costs around $10. 
+
+### Hardware 
+
+We recommend the **EDIMAX EW-7811UN** 
+
+### Software 
+
+**Note, this software changes the wlan0 function to monitor mode. You will therefore need to ensure that you can SSH in to the Pi as direct connectivity will not be possible** 
+
+**Install Aircrack-ng**
+
+```
+wget https://download.aircrack-ng.org/aircrack-ng-1.7.tar.gz
+ tar -zxvf aircrack-ng-1.7.tar.gz
+ cd aircrack-ng-1.7
+sudo apt-get -y install libnl1
+sudo apt-get -y install libnl-dev
+sudo apt-get -y install libnl-3-dev
+sudo apt-get -y install libnl-genl-3-dev
+sudo apt-get -y install libssl-dev
+ autoreconf -i
+ ./configure --with-experimental
+ make
+ make install
+ ldconfig
+```
+**Configure** 
+
+Check to determine the name assigned to your wlan. By default it will normally be wlan0
+```
+airmon-ng
+```
+
+Kill other processes using the wlan interface
+```
+airmon-ng check kill
+```
+
+SWitch wlan0 to monitor mode
+```
+airmon-ng start wlan0
+```
+**To exit monitor mode and restore original functionality** 
+
+```
+airmon-ng stop wlan0mon
+```
+```
+service network-manager start
+```
+
+## Installing RiD Service 
+
+**SSH in to your Pi**
+
 Clone in to the repository 
 ```
 sudo git clone https://github.com/DeFliTeam/RemoteIDReceiver
