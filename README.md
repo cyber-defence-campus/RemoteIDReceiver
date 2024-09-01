@@ -39,8 +39,22 @@ sudo apt-get -y install libssl-dev
  ./configure --with-experimental
  make
  make install
- ldconfig
+ ldconfig 
 ```
+
+# Alternative Installation Using Kali Linux Image 
+
+Download the correct image for your Pi from here https://arm.kali.org/images.html and spin up a deployment on your PI using this as a custom image
+
+```
+ sudo apt-get update && sudo apt-get upgrade
+```
+```
+sudo apt-get install -y aircrack-ng
+```
+
+# After Installing Aircrack 
+
 **Configure** 
 
 Check to determine the name assigned to your wlan. By default it will normally be wlan0
