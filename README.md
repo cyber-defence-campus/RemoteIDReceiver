@@ -32,8 +32,6 @@ We recommend the **EDIMAX EW-7811UN**
 wget https://download.aircrack-ng.org/aircrack-ng-1.7.tar.gz
  tar -zxvf aircrack-ng-1.7.tar.gz
  cd aircrack-ng-1.7
-sudo apt-get -y install libnl1
-sudo apt-get -y install libnl-dev
 sudo apt-get -y install libnl-3-dev
 sudo apt-get -y install libnl-genl-3-dev
 sudo apt-get -y install libssl-dev
