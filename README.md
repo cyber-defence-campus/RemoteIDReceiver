@@ -20,9 +20,100 @@ If you are intending on installing on a Raspberry Pi you will need to enable a m
 
 ### Hardware 
 
-We recommend the **EDIMAX EW-7811UN** 
+We recommend the **EDIMAX EW-7811UN** although any wireless adapter with monitoring mode is suitable
 
-### Software 
+**If installing using additional hardware please follow these steps to ensure your wireless adapter is visible, if using software only (Pi 4 or Pi5 then skip to Installation section**
+
+**Plug your ethernet cable and USB wireless adapter in to the Pi and then boot** 
+
+SSH in to your Pi 
+```
+ssh pi@raspberrypi
+```
+Once you’re logged in to the Pi, check to see if the Pi recognizes the USB device using the following command:
+```
+lsusb
+```
+You should see the following:
+```
+Bus 001 Device 004: ID 7392:7811 Edimax Technology Co., Ltd EW-7811Un 802.11n Wireless Adapter [Realtek RTL8188CUS]
+Bus 001 Device 003: ID 0424:ec00 Standard Microsystems Corp. SMSC9512/9514 Fast Ethernet Adapter
+Bus 001 Device 002: ID 0424:9514 Standard Microsystems Corp.
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+```
+Notice the first line.
+
+Now we’ll check to see if the device drivers are loaded. To list the kernal modules use:
+```
+lsmod
+```
+You should see something like:
+```
+Module                                   Size              Used by
+cfg80211
+rfkill
+8192cu       
+bcm2835_gpiomem
+...
+8192cu is what we’re looking for, and it looks like it’s installed
+
+As a final check, run:
+```
+iwconfig
+```
+And you should see the wireless adapter here:
+```
+wlan0     unassociated  Nickname:"<WIFI@REALTEK>"
+          Mode:Managed  Frequency:2.462 GHz  Access Point: 20:3D:66:44:C6:70
+          Bit Rate:72.2 Mb/s   Sensitivity:0/0
+          Retry:off   RTS thr:off   Fragment thr:off
+          Power Management:off
+          Link Quality=100/100  Signal level=100/100  Noise level=0/100
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+```
+
+It is important to note the first line, here is its "wlan0" on some it may show as "wlan1"
+
+Now, open the following file to add our network credentials.
+
+```
+sudo vim /etc/wpa_supplicant/wpa_supplicant.conf
+```
+
+add
+
+```
+network={
+  ssid="YOUR_NETWORK_SSID"
+  psk="YOUR_NETWORK_PASSWORD"
+}
+```
+Of course, you’ll need to substitute your SSID and password.
+
+Remove the ethernet cable, and reboot with the following command:
+
+```
+reboot
+```
+
+Ensuring the adapter does not go in to sleep mode
+
+```
+sudo nano /etc/modprobe.d/8192cu.conf
+```
+
+Add the following two lines to the configuration file, save and exit
+```
+# Disable power management
+options 8192cu rtw_power_mgnt=0 rtw_enusbss=0
+```
+```
+sudo reboot
+```
+
+
+### Installation (Start here for software only, cotinue from here for hardware)
 
 **Note, this software changes the wlan0 function to monitor mode. You will therefore need to ensure that you can SSH in to the Pi as direct connectivity will not be possible** 
 
@@ -57,7 +148,7 @@ sudo apt-get install -y aircrack-ng
 
 **Configure** 
 
-Check to determine the name assigned to your wlan. By default it will normally be wlan0
+Check to determine the name assigned to your wlan. By default it will normally be wlan0, if it is not then use whatever "wlan" has been assigned. For hardware installation ensure you use the wlan for the wireless adapter.
 ```
 airmon-ng
 ```
