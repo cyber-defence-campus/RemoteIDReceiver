@@ -213,6 +213,8 @@ This will start the web application on port 80 or the port defined by your previ
  
 This script copies the receiver files into `/opt/dsniffer/` and enables the service to be run at boot time. 
 
+**AT THIS POINT YOU WILL NEED TO EMAIL US TO OBTAIN THE DETAILS FOR SENDING DATA team@defli.xyz. You can however skip the sending data part for now and move on to the Usage Section**
+
 ## Sending Data ## 
 
 To send the data to our server please follow the follwing instructions. 
