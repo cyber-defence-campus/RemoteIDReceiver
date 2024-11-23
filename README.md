@@ -190,11 +190,14 @@ sudo git clone https://github.com/DeFliTeam/RemoteIDReceiver
 
 From `Receiver/` folder install the requirements with
 ```
+cd RemoteIDReceiver/Receiver
+```
+```
 sudo pip3 install -r ./requirements.txt
 ```
    (This step requires a working internet connection)
 
-To start the application run the python script (port 80 by default but you can change if required):
+To start the application manually run the python script (port 80 by default but you can change if required):
 
 ```
 sudo python3 ./backend/dronesniffer/main.py -p 80
@@ -202,13 +205,69 @@ sudo python3 ./backend/dronesniffer/main.py -p 80
 
 This will start the web application on port 80 or the port defined by your previous command.
 
-The receiver app can also be run at boot time by enabling `dsniffer.service`,  which runs the main python script. To run the service at boot time execute the following command
+**required** The receiver app can also be run at boot time by enabling `dsniffer.service`,  which runs the main python script. To run the service at boot time execute the following command
 
    ```
     sudo sh install_service.sh
    ```
  
 This script copies the receiver files into `/opt/dsniffer/` and enables the service to be run at boot time. 
+
+## Sending Data ## 
+
+To send the data to our server please follow the follwing instructions. 
+
+### Create SSH Key ###
+
+Check for existing key pair 
+
+```
+ls -al ~/.ssh/id_*.pub
+```
+
+If there are existing keys, you can either use those and skip the next step or backup up the old keys and generate a new one.
+
+If you see No such file or directory or no matches found it means that you do not have an SSH key and you can proceed with the next step and generate a new one.
+
+The following command will generate a new 4096 bits SSH key pair with your email address as a comment
+
+```
+ssh-keygen -t rsa -b 4096 -C "your_email@domain.com"
+```
+Press Enter to accept the default file location and file name:
+Output- Enter file in which to save the key (/home/yourusername/.ssh/id_rsa):
+
+Next, the ssh-keygen tool will ask you to type a secure passphrase, please do not enter a passphrase, simply press "enter" twice.
+
+To be sure that the SSH keys are generated you can list your new private and public keys with:
+
+```
+ls ~/.ssh/id_*
+```
+The output will look like this 
+```
+/home/yourusername/.ssh/id_rsa /home/yourusername/.ssh/id_rsa.pub
+```
+
+Now that you have generated an SSH key pair, you need to copy the public key to the DeFli server
+
+```
+ssh-copy-id remote_username@server_ip_address
+```
+
+You will be prompted for a password, this will be assigned to you via email 
+
+### Sending Data ###
+
+```
+crontab -e
+```
+
+```
+*/1 * * * *  rsync -avz defli@server_ip_address:/home/user/YOUR_EMAIL /opt/dsniffer/remoteid.db
+```
+
+
 
 
 ## Usage
