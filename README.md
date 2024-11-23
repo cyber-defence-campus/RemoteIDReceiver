@@ -165,7 +165,7 @@ Kill other processes using the wlan interface
 airmon-ng check kill
 ```
 
-SWitch wlan0 to monitor mode
+SWitch wlan0 to monitor mode (change wlan0 to the correct wlan number assigned to your wireless adapter)
 ```
 airmon-ng start wlan0
 ```
