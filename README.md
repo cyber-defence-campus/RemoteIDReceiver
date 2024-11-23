@@ -194,13 +194,13 @@ sudo pip3 install -r ./requirements.txt
 ```
    (This step requires a working internet connection)
 
-To start the application run the python script (port 80 by default):
+To start the application run the python script (port 80 by default but you can change if required):
 
 ```
 sudo python3 ./backend/dronesniffer/main.py -p 80
 ```
 
-This will start the web application on port 80.
+This will start the web application on port 80 or the port defined by your previous command.
 
 The receiver app can also be run at boot time by enabling `dsniffer.service`,  which runs the main python script. To run the service at boot time execute the following command
 
