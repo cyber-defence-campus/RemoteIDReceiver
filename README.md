@@ -44,24 +44,31 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 Notice the first line.
 
 Now we’ll check to see if the device drivers are loaded. To list the kernal modules use:
+
 ```
 lsmod
 ```
+
 You should see something like:
+
 ```
 Module                                   Size              Used by
 cfg80211
 rfkill
 8192cu       
 bcm2835_gpiomem
-...
+```
+
 8192cu is what we’re looking for, and it looks like it’s installed
 
 As a final check, run:
+
 ```
 iwconfig
 ```
+
 And you should see the wireless adapter here:
+
 ```
 wlan0     unassociated  Nickname:"<WIFI@REALTEK>"
           Mode:Managed  Frequency:2.462 GHz  Access Point: 20:3D:66:44:C6:70
