@@ -213,7 +213,8 @@ This will start the web application on port 80 or the port defined by your previ
  
 This script copies the receiver files into `/opt/dsniffer/` and enables the service to be run at boot time. 
 
-**AT THIS POINT YOU WILL NEED TO EMAIL US TO OBTAIN THE DETAILS FOR SENDING DATA team@defli.xyz. You can however skip the sending data part for now and move on to the Usage Section**
+**AT THIS POINT YOU WILL NEED TO EMAIL US TO OBTAIN THE DETAILS FOR SENDING DATA team@defli.xyz.
+Please note that the email you use for sending must be replicated in the fields marked   You can however skip the sending data part for now and move on to the Usage Section**
 
 ## Sending Data ## 
 
@@ -231,13 +232,16 @@ If there are existing keys, you can either use those and skip the next step or b
 
 If you see No such file or directory or no matches found it means that you do not have an SSH key and you can proceed with the next step and generate a new one.
 
-The following command will generate a new 4096 bits SSH key pair with your email address as a comment
+The following command will generate a new 4096 bits SSH key pair with your email address as a comment. **Remember to put your email address in**
 
 ```
-ssh-keygen -t rsa -b 4096 -C "your_email@domain.com"
+ssh-keygen -t rsa -b 4096 -C "YOUR_EMAIL"
 ```
 Press Enter to accept the default file location and file name:
+
+```
 Output- Enter file in which to save the key (/home/yourusername/.ssh/id_rsa):
+```
 
 Next, the ssh-keygen tool will ask you to type a secure passphrase, please do not enter a passphrase, simply press "enter" twice.
 
@@ -254,7 +258,7 @@ The output will look like this
 Now that you have generated an SSH key pair, you need to copy the public key to the DeFli server
 
 ```
-ssh-copy-id remote_username@server_ip_address
+ssh-copy-id defli@172.24.239.135
 ```
 
 You will be prompted for a password, this will be assigned to you via email 
@@ -266,7 +270,7 @@ crontab -e
 ```
 
 ```
-*/1 * * * *  rsync -avz defli@server_ip_address:/home/user/YOUR_EMAIL /opt/dsniffer/remoteid.db
+*/1 * * * *  rsync -avz defli@172.24.239.135:/home/user/YOUR_EMAIL /opt/dsniffer/remoteid.db
 ```
 
 
