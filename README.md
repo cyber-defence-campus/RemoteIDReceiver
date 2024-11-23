@@ -120,7 +120,7 @@ sudo reboot
 ```
 
 
-### Installation (Start here for software only, cotinue from here for hardware)
+### Installation (Start here for software only, continue from here for hardware)
 
 **Note, this software changes the wlan0 function to monitor mode. You will therefore need to ensure that you can SSH in to the Pi as direct connectivity will not be possible** 
 
