@@ -220,8 +220,9 @@ From the browser, access the ip address of the receiver machine on the specified
 ![Setup view](Receiver/resources/images/setupview.png "Setup view")
 
 After the google maps key is accepted a map appears with multiple controls. The 
-picture below displays this view (monitor view). To start monitoring, 
-a WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) and saved.
+picture below displays this view (monitor view). 
+
+**To start monitoring, a WLAN interface (**with monitor mode capabilities**) has to be chosen via the Settings (in the top left corner) and saved**
 
 ![Monitor view of active system displaying both map options - Regular and Sattelite](Receiver/resources/images/monitorview.png "Monitor view")
 
