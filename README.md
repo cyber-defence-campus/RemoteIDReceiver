@@ -266,6 +266,9 @@ You will be prompted for a password, this will be assigned to you via email
 ### Sending Data ###
 
 ```
+ssh defli@172.24.239.135 "mkdir -p home/user/YOUR_EMAIL"
+
+```
 crontab -e
 ```
 
