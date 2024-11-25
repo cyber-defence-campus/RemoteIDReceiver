@@ -195,7 +195,7 @@ cd RemoteIDReceiver/Receiver
 ```
 sudo pip3 install -r ./requirements.txt
 ```
-   (This step requires a working internet connection)
+   (This step requires a working internet connection) **If you get an error regarding python and a virtual environment please use the fix here https://github.com/DeFliTeam/RemoteIDReceiver#error-when-installing-requirementstxt**
 
 To start the application manually run the python script (port 80 by default but you can change if required):
 
