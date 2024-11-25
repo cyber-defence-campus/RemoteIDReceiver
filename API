@@ -1,0 +1,44 @@
+# API Requests for Extracting Drone Data 
+
+```
+GET /api/drones/active
+```
+Returns a list of all drones that are currently considered active (in flight)
+
+```
+GET /api/drones/all
+```
+Returns a list of all drones that have ever been captured (are currently in the database)
+
+```
+GET /api/drones/{serial_number}/history
+```
+Parameters
+serial_number (in URL): the serial number of the drone 
+
+Returns the current flight path for the drone with the given serial number
+
+```
+GET /api/drones/{serial_number}/flights
+```
+Parameters
+serial_number (in URL): the serial number of the drone
+
+Returns a list of flight dates for the drone with the given serial number
+
+Output 
+A list of timestamps (start time) of all past flights of the drone (a list of strings formatted as UTC timestamps) 
+
+```
+GET /api/drones/{serial_number}/flights/{flight}
+```
+Parameters 
+serial_number (in URL): the serial number of the drone
+flight (in URL): the timestamp of the flight (as returned by the flights endpoint) formatted in UTC and URL-encoded 
+
+Returns the flight path for the drone with the given serial number for a particular flight 
+
+Output 
+The flight path of the drone of that particular flight
+
+
