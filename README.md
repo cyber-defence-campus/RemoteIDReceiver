@@ -263,6 +263,11 @@ ssh-copy-id defli@172.24.239.135
 
 You will be prompted for a password, this will be assigned to you via email 
 
+If this does not work please try this command instead 
+
+```
+cat ~/.ssh/id_rsa.pub | ssh defli@172.24.239.135 "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+
 ### Sending Data ###
 
 ```
