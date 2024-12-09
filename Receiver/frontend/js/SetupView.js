@@ -6,7 +6,7 @@ export default defineComponent({
     name: "SetupView",
     template: `
         <div style="width: 100vw; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-            <h1>Drone Sniffer Setup</h1>
+            <h1>DeFli RiD Drone Detetction Setup</h1>
             <label for="setup-maps-api">Enter/Paste Google Maps API Key:</label>
             <input id="setup-maps-api" type="text" v-model="apiKey">
             <button style="margin: 0.5rem;" :disabled="!apiKey" @click="setup">Setup</button>
