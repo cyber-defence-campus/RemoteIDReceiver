@@ -10,6 +10,8 @@ __all__ = ["sniff_manager"]
 
 #from lte.lte_sniffer import lte_sniffer
 
+LOG = logging.getLogger(__name__)
+
 
 def switch_dev_mode(device: str, mode: str) -> bool:
     """
@@ -174,12 +176,14 @@ class SniffManager:
         """
         # remove existing sniffer for that interface
         self.stop(interface)
-        print("Gonna setup WiFiInterfaceSniffer")
+        LOG.info(f"Starting sniffer for interface {interface}...")
         sniffer = WiFiInterfaceSniffer(interface)
-        print("Success in setting WiFI Interface Sniffer")
         success = sniffer.start()
         if success:
+            LOG.info(f"Sniffer for interface {interface} started")
             self.sniffers[interface] = sniffer
+        else:
+            LOG.warning(f"Failed to start sniffer for interface {interface}")
         return success
 
     def stop(self, interface: str) -> None:
@@ -224,10 +228,10 @@ class SniffManager:
         """
         if lte:
             #logging.info("Creating LTE Sniffer...")
-            logging.info(" LTE Sniffer not ready...")
+            LOG.info(" LTE Sniffer not ready...")
             #sniffer = LteFileSniffer(filename)
         else:
-            logging.info("Creating Wi-Fi Sniffer...")
+            LOG.info("Creating Wi-Fi Sniffer...")
             sniffer = WiFiFileSniffer(filename)
         self.file_sniffers.append(sniffer)
         sniffer.start()
@@ -237,7 +241,7 @@ class SniffManager:
         Shuts down all sniffers.
         """
         # stop all WiFiInterfaceSniffers
-        logging.info("Stopping all sniffers...")
+        LOG.info("Stopping all sniffers...")
         for interface in self.sniffers.copy():
             self.stop(interface)
 
@@ -245,7 +249,6 @@ class SniffManager:
         for sniffer in self.file_sniffers:
             sniffer.stop()
         self.file_sniffers = []
-        logging.info("All sniffers were stopped successfully.")
-
+        LOG.info("All sniffers were stopped successfully.")
 
 sniff_manager = SniffManager()
