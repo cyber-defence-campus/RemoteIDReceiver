@@ -4,9 +4,10 @@ from threading import Thread, Event
 from scapy.layers.dot11 import Dot11Elt,Dot11EltVendorSpecific
 from scapy.sendrecv import AsyncSniffer
 from scapy.config import conf
-from drone_sniffer import filter_frames
+from scapy.packet import Packet
+from typing import Callable 
 
-__all__ = ["sniff_manager"]
+__all__ = ["SniffManager"]
 
 #from lte.lte_sniffer import lte_sniffer
 
@@ -42,15 +43,17 @@ class WiFiInterfaceSniffer:
     Sniffs Wi-Fi interfaces and forwards packets to handlers.
     """
 
-    def __init__(self, interface: str) -> None:
+    def __init__(self, interface: str, on_packet_received: Callable[[Packet], None]) -> None:
         """
         Args:
             interface (str): The Wi-Fi device/interface to sniff on.
+            on_packet_received (Callable[[Packet], None]): Callback function to process received packets.
         """
         self.interface = interface
+        self.on_packet_received = on_packet_received
         self.sniffer = AsyncSniffer(
             iface=interface,
-            prn=filter_frames
+            prn=on_packet_received
         )
 
     def start(self) -> bool:
@@ -89,15 +92,17 @@ class WiFiFileSniffer:
     Parses a pcap file and forwards the parsed packets to the handler.
     """
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str, on_packet_received: Callable[[Packet], None]) -> None:
         """
         Args:
             filename (str): The filename of the file to be read and parsed.
+            on_packet_received (Callable[[Packet], None]): Callback function to process received packets.
         """
         self.filename = filename
+        self.on_packet_received = on_packet_received
         self.sniffer = AsyncSniffer(
             offline=filename,
-            prn=filter_frames
+            prn=on_packet_received
         )
 
     def start(self) -> bool:
@@ -159,9 +164,14 @@ class SniffManager:
     Can start/stop new/existing sniffers.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, on_packet_received: Callable[[Packet], None]) -> None:
+        """
+        Args:
+            on_packet_received (Callable[[Packet], None]): Callback function to process received packets.
+        """
         self.sniffers = {}
         self.file_sniffers = []
+        self.on_packet_received = on_packet_received
 
     def start(self, interface: str) -> bool:
         """
@@ -177,7 +187,7 @@ class SniffManager:
         # remove existing sniffer for that interface
         self.stop(interface)
         LOG.info(f"Starting sniffer for interface {interface}...")
-        sniffer = WiFiInterfaceSniffer(interface)
+        sniffer = WiFiInterfaceSniffer(interface, self.on_packet_received)
         success = sniffer.start()
         if success:
             LOG.info(f"Sniffer for interface {interface} started")
@@ -233,7 +243,7 @@ class SniffManager:
             #sniffer = LteFileSniffer(filename)
         else:
             LOG.info("Creating Wi-Fi Sniffer...")
-            sniffer = WiFiFileSniffer(filename)
+            sniffer = WiFiFileSniffer(filename, self.on_packet_received)
         self.file_sniffers.append(sniffer)
         sniffer.start()
 

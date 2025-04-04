@@ -9,6 +9,8 @@ from api import app
 from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
+from drone_sniffer import filter_frames
+
 ####
 # Setup logging
 ####
@@ -81,7 +83,8 @@ def main():
     logging.info("Setting up database...")
     setup_database()
 
-    sniff_manager = SniffManager()
+    # setup sniff manager
+    sniff_manager = SniffManager(on_packet_received=filter_frames)
 
     # register shutdown manager
     atexit.register(shutdown(sniff_manager))
