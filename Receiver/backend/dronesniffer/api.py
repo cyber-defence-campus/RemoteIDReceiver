@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Generator
 
 from fastapi import FastAPI, WebSocket
 from scapy.interfaces import get_if_list
@@ -80,23 +81,25 @@ def get_drones(only_active=True) -> list[DroneDto]:
     Returns all or all active drones depending on the parameter at their latest timestamp.
     """
     with Session(engine) as session:
-        subquery = session.query(
-            RemoteId,
-            func.rank().over(
-                order_by=RemoteId.timestamp.desc(),
-                partition_by=RemoteId.serial_number
-            ).label("rank")
+        # Subquery to get the latest timestamp for every drone.
+        # If only_active is True, it will only consider timestamps within the activity offset.
+        subquery = select(
+            RemoteId.serial_number,
+            func.max(RemoteId.timestamp).label("max_timestamp")
         ).where(
             RemoteId.timestamp >= (datetime.now() - get_activity_offset()) if only_active else True
-        ).subquery()
-
-        _info = aliased(RemoteId, subquery)
-        query = session.query(subquery) \
-            .filter(subquery.c.rank == 1) \
-            .order_by(_info.serial_number)
+        ).group_by(RemoteId.serial_number).subquery()
+        
+        # Join the subquery with RemoteId to get the full objects
+        query = select(RemoteId).join(
+            subquery,
+            (RemoteId.serial_number == subquery.c.serial_number) & 
+            (RemoteId.timestamp == subquery.c.max_timestamp)
+        ).order_by(RemoteId.serial_number)
+        
         return list(map(
             to_drone_dto,
-            session.exec(query)
+            session.exec(query).all()
         ))
 
 
@@ -116,7 +119,7 @@ def get_all_drones() -> list[DroneDto]:
     return get_drones(only_active=False)
 
 
-def get_positions(drone: RemoteId) -> (Position, Position, Position):
+def get_positions(drone: RemoteId) -> tuple[Position, Position, Position]:
     """
     Extracts the drone (first), pilot (second) and home (third) position of that drone packet.
 
@@ -133,7 +136,7 @@ def get_positions(drone: RemoteId) -> (Position, Position, Position):
     )
 
 
-def get_drone_packets_query(serial_number: str) -> None:
+def get_drone_packets_query(serial_number: str) -> Generator:
     """
     Returns all flight info packets with that serial_number.
 
