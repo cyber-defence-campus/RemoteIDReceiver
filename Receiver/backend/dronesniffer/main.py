@@ -2,7 +2,7 @@ import argparse
 import atexit
 import logging
 import sys
-
+import colorlog
 import uvicorn
 
 from api import app
@@ -10,7 +10,36 @@ from info_handler import setup_database
 from settings import get_settings
 from sniffers import sniff_manager
 
-logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(module)s %(levelname)s %(message)s')
+####
+# Setup logging
+####
+formatter = colorlog.ColoredFormatter(
+        fmt="%(log_color)s[%(levelname)-8s]%(reset)s %(white)s%(asctime)s -  %(cyan)s%(name)s%(reset)s - %(message_log_color)s%(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        log_colors={
+            'DEBUG':    'blue',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'bold_red',
+        },
+        secondary_log_colors={
+            'message': {
+                'DEBUG':    'blue',
+                'INFO':     'white',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            }
+        },
+        style='%'
+    )
+
+handler = colorlog.StreamHandler()
+handler.setFormatter(formatter)
+root_logger = logging.getLogger()
+root_logger.addHandler(handler)
+root_logger.setLevel(logging.DEBUG)
 
 
 def parse_args() -> argparse.Namespace:
