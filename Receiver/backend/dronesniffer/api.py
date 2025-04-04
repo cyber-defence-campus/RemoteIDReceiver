@@ -11,7 +11,6 @@ from starlette.staticfiles import StaticFiles
 from info_handler import engine
 from models import DroneDto, Position, RemoteId, HistoryDto
 from settings import get_settings, save_settings, Settings
-from sniffers import sniff_manager
 from ws_manager import create_manager
 
 app = FastAPI()

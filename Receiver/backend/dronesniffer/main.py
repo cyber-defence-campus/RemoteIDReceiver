@@ -8,8 +8,7 @@ import uvicorn
 from api import app
 from info_handler import setup_database
 from settings import get_settings
-from sniffers import sniff_manager
-
+from sniffers import SniffManager
 ####
 # Setup logging
 ####
@@ -60,11 +59,16 @@ def parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def shutdown() -> None:
+def shutdown(sniff_manager) -> None:
     """
     Stops all services, handlers & connections on shutdown.
     """
-    sniff_manager.shutdown()
+    def stop_sniffing():
+        LOG.info("Received shutdown signal, stopping sniffing...")
+        sniff_manager.shutdown()
+    
+    return stop_sniffing
+    
 
 
 def main():
@@ -77,17 +81,21 @@ def main():
     logging.info("Setting up database...")
     setup_database()
 
+    sniff_manager = SniffManager()
+
     # register shutdown manager
-    atexit.register(shutdown)
+    atexit.register(shutdown(sniff_manager))
 
     try:
         if file or lte:
             LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
 
-        LOG.info("Starting sniff manager...")
+        
+        # Start sniffing on the interfaces 
         settings = get_settings()
-        sniff_manager.set_sniffing_interfaces(settings.interfaces)
+        interfaces = settings.interfaces 
+        sniff_manager.set_sniffing_interfaces(interfaces)
 
         LOG.info(f"Starting API on port {port}...")
         uvicorn.run(app, host='0.0.0.0', port=port)

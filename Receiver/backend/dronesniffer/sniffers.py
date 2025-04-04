@@ -207,6 +207,7 @@ class SniffManager:
         Args:
             interfaces (list[str]): List of interfaces we want to sniff on.
         """
+        LOG.info(f"Setting sniffing interfaces to {interfaces}...")
         # add new ones
         for interface in interfaces:
             if interface not in self.sniffers:
@@ -251,4 +252,3 @@ class SniffManager:
         self.file_sniffers = []
         LOG.info("All sniffers were stopped successfully.")
 
-sniff_manager = SniffManager()
