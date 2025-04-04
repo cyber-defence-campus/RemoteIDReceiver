@@ -4,12 +4,13 @@ from scapy.layers.dot11 import Dot11Beacon, Dot11EltVendorSpecific
 from scapy.packet import Packet
 
 from info_handler import save_drone_info
-from parser_handler import DefaultHandler, DjiHandler, AsdStanHandler
-from parsers import Parser
+from parse.handler import DefaultHandler, DjiHandler, AsdStanHandler
+from parse.parser import Parser
 
 handler = AsdStanHandler(DjiHandler(DefaultHandler(None)))
 home_locations = {}
 
+LOG = logging.getLogger(__name__)
 
 def filter_frames(packet: Packet) -> None:
     """
@@ -21,6 +22,7 @@ def filter_frames(packet: Packet) -> None:
     Args:
         packet (Packet): Wi-Fi frame.
     """
+    
     #if packet.haslayer(Dot11Beacon):  # Monitor 802.11 beacon traffic
     if packet.haslayer(Dot11EltVendorSpecific):  # check vendor specific ID -> 221
         vendor_spec: Dot11EltVendorSpecific = packet.getlayer(Dot11EltVendorSpecific)
@@ -30,11 +32,13 @@ def filter_frames(packet: Packet) -> None:
                 # parse header
                 remote_id = handler.parse(vendor_spec.info, layer_oui)
                 if remote_id:
-                    serial = remote_id.serial_number
-                    logging.info(f"Parsed Remote ID with serial number for: {serial}")
+                    mac_from = packet.addr2
+                    remote_id.uuid = mac_from
+                    LOG.info(f"Parsed Remote ID from MAC: {mac_from}")
 
                     remote_id.add_home_loc(home_locations)
-                    logging.info(f"Remote ID: {remote_id}")
+
+                    LOG.debug(f"Remote ID: {remote_id}")
 
                     save_drone_info(remote_id)
                 break

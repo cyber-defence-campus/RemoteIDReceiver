@@ -4,13 +4,14 @@ import pytest
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap, Dot11EltVendorSpecific
 
 from drone_sniffer import filter_frames
-from parsers import DjiParser, AsdStanParser
-from parser_handler import DjiHandler, AsdStanHandler, DefaultHandler
+from parse.handler import DjiHandler, AsdStanHandler, DefaultHandler
+from parse.dji.parser import DjiParser
+from parse.ads_stan.parser import DirectRemoteIdMessageParser
 
 PARROT_OUI = PARROT_OUI = ["90:3a:e6", "00:12:1C", "90:03:B7", "A0:14:3D", "00:26:7E"]
 
 class TestIsADrone:
-    @pytest.mark.parametrize("oui", [*DjiParser.oui, AsdStanParser.oui])
+    @pytest.mark.parametrize("oui", [*DjiParser.oui, DirectRemoteIdMessageParser.oui])
     def test_when_drone_oui_then_true(self, oui):
         handler = DjiHandler(AsdStanHandler(DefaultHandler(None)))
         result = handler.is_drone(oui)

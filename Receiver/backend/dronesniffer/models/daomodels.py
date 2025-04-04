@@ -30,28 +30,53 @@ class RemoteId(SQLModel, table=True):
         uuid (str): User unique identifier as 20-digit string.
         spoofed (bool): Assumption that RID is spoofed.
     """
+    # Database fields
     id: Optional[int] = Field(default=None, primary_key=True)
+    
+    # Identification fields
     oui: str
+    uuid: str = Field(index=True)
     serial_number: Optional[str] = Field(default=None, index=True)  # 16 length (alphanumerical string)
     timestamp: Optional[datetime] = None
-    lng: Optional[float] = Field(default=None, le=180, ge=-180)
+    spoofed: Optional[bool] = None
+    
+    operational_status : Optional[int] = None  # ASD-STAN operational status
+
+    accuracy_horizontal : Optional[float] = None  # ASD-STAN horizontal accuracy
+    accuracy_vertical : Optional[float] = None  # ASD-STAN vertical accuracy
+    accuracy_velocity : Optional[float] = None  # ASD-STAN velocity accuracy
+
+    flight_purpose : Optional[str] = None  # ASD-STAN flight purpose
+    ua_type : Optional[int] = None  # ASD-STAN drone type
+    drone_class : Optional[int] = None  # ASD-STAN drone class
+
+    # Drone position and orientation
     lat: Optional[float] = Field(default=None, le=90, ge=-90)
+    lng: Optional[float] = Field(default=None, le=180, ge=-180)
     altitude: Optional[int] = None
     height: Optional[int] = None
+
+    # Drone movement (DJI only)
     x_speed: Optional[float] = None
     y_speed: Optional[float] = None
     z_speed: Optional[float] = None
+
+    # Drone rotation (DJI only)
     pitch: Optional[float] = None
     roll: Optional[float] = None
     yaw: Optional[float] = None
+
+    # Pilot position
     pilot_lat: Optional[float] = Field(default=None, le=90, ge=-90)
     pilot_lng: Optional[float] = Field(default=None, le=180, ge=-180)
-    home_lng: Optional[float] = Field(default=None, le=180, ge=-180)
-    home_lat: Optional[float] = Field(default=None, le=90, ge=-90)
-    uuid: str = Field(index=True)
-    spoofed: Optional[bool] = None
+    pilot_altitude: Optional[int] = None
+    pilot_registration_number : Optional[str] = None  # Pilot registration number (ADS-STAN Operator ID)
 
-    def add_home_loc(self, drone_dict: {}) -> None:
+    # Home position
+    home_lat: Optional[float] = Field(default=None, le=90, ge=-90)
+    home_lng: Optional[float] = Field(default=None, le=180, ge=-180)
+
+    def add_home_loc(self, drone_dict: dict) -> None:
         """
         Method to add home location of a drone flight. If the serial number of a drone has already been captured
         and therefore a home location exists. This value will be reused to set the home location. If the serial

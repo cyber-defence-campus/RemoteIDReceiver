@@ -1,3 +1,4 @@
+
 import logging
 from abc import abstractmethod
 from typing import Optional
@@ -6,8 +7,9 @@ from scapy.packet import Packet
 
 from exceptions import ParseRemoteIdError
 from models import RemoteId
-from parsers import DjiParser, AsdStanParser
 
+from .ads_stan.parser import DirectRemoteIdMessageParser
+from .dji.parser import DjiParser
 
 class Handler(object):
     """
@@ -109,25 +111,19 @@ class AsdStanHandler(Handler):
     """
 
     def accepts(self, oui: str) -> bool:
-        return oui == AsdStanParser.oui
+        return oui == DirectRemoteIdMessageParser.oui
 
     def parse(self, packet, oui: str) -> Optional[RemoteId]:
         accepted = self.accepts(oui)
 
         if not accepted:
             return super().parse(packet, oui)
-
-        try:
-            (_, _, msg_type) = AsdStanParser.extract_header(packet)
-        except ParseRemoteIdError as err:
-            logging.warning(err)
-            return None
-
-        if msg_type == AsdStanParser.msg_type_four:
-            return AsdStanParser.parse_static_msg(packet, oui)
-        else:
-            logging.info("Unknown ASD-STAN message type detected")
-            return None
+        
+        body, _ = DirectRemoteIdMessageParser.from_wifi(packet)
+        message = body.to_generic()
+        message.oui = oui 
+        return message
+        
 
     def is_drone(self, oui: str) -> bool:
         return True if self.accepts(oui) else super().is_drone(oui)
