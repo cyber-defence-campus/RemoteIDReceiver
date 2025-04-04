@@ -1,15 +1,16 @@
 import argparse
-import atexit
 import logging
 import sys
 import colorlog
 import uvicorn
+import signal
 
 from api import app
 from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
 from drone_sniffer import filter_frames
+from parsing_queue import ParsingQueue
 
 ####
 # Setup logging
@@ -61,13 +62,16 @@ def parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def shutdown(sniff_manager) -> None:
+def shutdown(sniff_manager, parsing_queue) -> None:
     """
     Stops all services, handlers & connections on shutdown.
     """
-    def stop_sniffing():
+    def stop_sniffing(signum, frame) -> None:
         LOG.info("Received shutdown signal, stopping sniffing...")
         sniff_manager.shutdown()
+
+        LOG.info("Stopping parsing queue...")
+        parsing_queue.stop()
     
     return stop_sniffing
     
@@ -83,11 +87,19 @@ def main():
     logging.info("Setting up database...")
     setup_database()
 
+    
+    # Parsing Queue.
+    # Whenever a packet is received, it will be submitted to the queue
+    # and processed by the worker threads.
+    parsing_queue = ParsingQueue(process_packet_function=filter_frames, num_workers=4, max_queue_size=0)
+    parsing_queue.start()
+    
     # setup sniff manager
-    sniff_manager = SniffManager(on_packet_received=filter_frames)
+    sniff_manager = SniffManager(on_packet_received=parsing_queue.submit)
 
-    # register shutdown manager
-    atexit.register(shutdown(sniff_manager))
+    # setup signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, shutdown(sniff_manager, parsing_queue))
+    signal.signal(signal.SIGTERM, shutdown(sniff_manager, parsing_queue))
 
     try:
         if file or lte:
