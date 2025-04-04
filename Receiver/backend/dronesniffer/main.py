@@ -39,8 +39,12 @@ handler = colorlog.StreamHandler()
 handler.setFormatter(formatter)
 root_logger = logging.getLogger()
 root_logger.addHandler(handler)
-root_logger.setLevel(logging.DEBUG)
+root_logger.setLevel(logging.INFO)
 
+### 
+# Logger for this file
+###
+LOG = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     """
@@ -78,14 +82,14 @@ def main():
 
     try:
         if file or lte:
-            logging.info(f"Started with file argument, starting parsing of {file}")
+            LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
 
-        logging.info("Starting sniff manager...")
+        LOG.info("Starting sniff manager...")
         settings = get_settings()
         sniff_manager.set_sniffing_interfaces(settings.interfaces)
 
-        logging.info(f"Starting API on port {port}...")
+        LOG.info(f"Starting API on port {port}...")
         uvicorn.run(app, host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         sys.exit(0)
