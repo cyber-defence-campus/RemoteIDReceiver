@@ -3,6 +3,10 @@ from scapy.packet import Packet
 import struct
 from scapy.packet import Packet
 from exceptions import ParseRemoteIdError
+from models import RemoteId
+from .ads_stan.messages.direct_remote_id import DirectRemoteIdMessage
+from typing import Optional, List
+
 
 class Parser:
 
@@ -10,7 +14,7 @@ class Parser:
     Root Parser for a vendor specific packet.
     """
     header_size = 8
-    oui = None
+    oui: List[str] = []  # List of supported OUIs
 
     @staticmethod
     def extract_header(packet: Packet) -> tuple:
@@ -54,3 +58,17 @@ class Parser:
             return "00:00:00"
         oui_raw = hex(oui_dec)[2:].zfill(6)  # [2:0] -> to remove '0x' part of hex value
         return f"{oui_raw[0:2]}:{oui_raw[2:4]}:{oui_raw[4:]}".upper()
+
+    @staticmethod
+    def from_wifi(packet: Packet, oui: str) -> Optional[RemoteId]:
+        """
+        Parse a vendor specific element of a Wi-Fi packet.
+
+        Args:
+            packet (Packet): Wi-Fi packet.
+            oui (str): Vendor OUI.
+
+        Returns:
+            Optional[RemoteId]: Parsed RemoteId or None if parsing not possible.
+        """
+        raise NotImplementedError("Subclasses must implement from_wifi method")

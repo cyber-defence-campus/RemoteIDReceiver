@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional, List
 from .strategies.basic_id import BasicIdParsingStrategy
 from .strategies.location_vector import LocationVectorParsingStrategy
 from .strategies.reserved import ReservedParsingStrategy
@@ -13,7 +14,7 @@ import struct
 from scapy.packet import Packet
 
 class DirectRemoteIdMessageParser(Parser):
-    oui: str = "FA:0B:BC"  # should be 50-6F-9A???
+    oui: List[str] = ["FA:0B:BC", "50-6F-9A"]  
     
     _strategies = {
         0x0: BasicIdParsingStrategy(),
@@ -55,15 +56,11 @@ class DirectRemoteIdMessageParser(Parser):
         return parsed_message
 
     @staticmethod
-    def from_wifi(packet: Packet) -> tuple[DirectRemoteIdMessage, tuple]:
+    def from_wifi(packet: Packet, oui: str) -> Optional[DirectRemoteIdMessage]:
         """
         @returns
             - DirectRemoteIdMessage: Parsed message
-            - tuple: Header content (oui, vendor_spec_bytes, version).
         """
-        header_format = '<3s4sB'
-        header = struct.unpack(header_format, packet[:8])
-        body = DirectRemoteIdMessageParser.parse(packet[8:])
-        return body, header
+        return DirectRemoteIdMessageParser.parse(packet[8:])
 
 

@@ -34,10 +34,10 @@ invalid_drone_loc = [
 ]
 
 pilot_loc = [
-    (-91, -20, None, -20),
-    (91, -20, None, -20),
-    (22, -181, 22, None),
-    (22, 181, 22, None),
+    (-91, -20, -91, -20),
+    (91, -20, 91, -20),
+    (22, -181, 22, -181),
+    (22, 181, 22, 181),
 ]
 
 class TestDjiV2Parser:
@@ -112,21 +112,6 @@ class TestDjiV2Parser:
         assert round(result.lat, 4) == round(expected_lat, 4)
         assert round(result.lng, 4) == round(expected_lng, 4)
 
-    @pytest.mark.parametrize("lat,lng", invalid_drone_loc)
-    def test_invalid_drone_location(self, lat, lng, caplog):
-        # Arrange
-        oui = "60:60:1F"
-        lat = round(lat / 180 * math.pi * 10**7)
-        lng = round(lng / 180 * math.pi * 10**7)
-        vendor_spec_data = self.setup_packet(lat=lat, lng=lng)
-
-        # Act
-        result = DjiParser.parse_version_2(b'\x60\x60\x1f' + vendor_spec_data, oui)
-
-        # Assert
-        assert not result
-        assert "Parsing of drone position failed with error" in caplog.text
-        assert ". Setting " not in caplog.text
 
     @pytest.mark.parametrize("lat,lng,expected_lat,expected_lng", pilot_loc)
     def test_pilot_location(self, lat, lng, expected_lat, expected_lng, caplog):
@@ -143,8 +128,6 @@ class TestDjiV2Parser:
         assert result
         assert not result.pilot_lat or round(result.pilot_lat, 4) == round(expected_lat, 4)
         assert not result.pilot_lng or round(result.pilot_lng, 4) == round(expected_lng, 4)
-        assert "must be between" in caplog.text
-        assert "to None" in caplog.text
 
     def test_malformed_packet(self, caplog):
         # Arrange

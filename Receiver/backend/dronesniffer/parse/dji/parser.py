@@ -1,5 +1,3 @@
-
-
 import logging
 import math
 import struct
@@ -8,10 +6,8 @@ from typing import Optional
 
 from scapy.packet import Packet
 
-from exceptions import ParseRemoteIdError
-from models import RemoteId, Position
-from spoofing_detection import is_spoofed
 from parse.parser import Parser
+from .messages.dji_message import DjiMessage
 
 class DjiParser(Parser):
     """
@@ -51,11 +47,10 @@ class DjiParser(Parser):
 
     @staticmethod
     def _get_uuid(byte_value) -> str:
-        #.rstrip('\x00').strip()
         return byte_value.decode().rstrip('\x00').strip()
 
     @staticmethod
-    def parse_version_1(packet: Packet, oui: str) -> Optional[RemoteId]:
+    def parse_version_1(packet: Packet, oui: str) -> Optional[DjiMessage]:
         """
         Method to parse a vendor specific element of a Wi-Fi packet that contains version 1 of DJI's proprietary
         Remote ID.
@@ -65,7 +60,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[RemoteId]: Parsed Remote ID or None if parsing not possible.
+            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
         """
         try:
             unpacked = struct.unpack(DjiParser._version_1_format, packet[Parser.header_size:])
@@ -81,28 +76,35 @@ class DjiParser(Parser):
             return None
 
         try:
-            pos = Position(lat=DjiParser._to_coordinate(drone_lat), lng=DjiParser._to_coordinate(drone_lon))
-        except ValueError as err:
+            lat = DjiParser._to_coordinate(drone_lat)
+            lng = DjiParser._to_coordinate(drone_lon)
+            home_lat = DjiParser._to_coordinate(home_lat)
+            home_lng = DjiParser._to_coordinate(home_lng)
+        except Exception as err:
             logging.warning(err)
             return None
 
-        home_pos = Position(lat=DjiParser._to_coordinate(home_lat),
-                            lng=DjiParser._to_coordinate(home_lng),
-                            default=True)
-
-        spoofed = is_spoofed(pos, home_pos)
-
         try:
-            return RemoteId(lng=pos.lng, lat=pos.lat, height=height / 10, yaw=DjiParser._to_angle(yaw), x_speed=x_speed,
-                            y_speed=y_speed, timestamp=datetime.now(), oui=oui, home_lat=home_pos.lat,
-                            home_lng=home_pos.lng, uuid=DjiParser._get_uuid(uuid),
-                            serial_number=serial_number.decode(), spoofed=spoofed)
+            return DjiMessage(
+                serial_number=serial_number.decode(),
+                lng=lng,
+                lat=lat,
+                height=height / 10,
+                x_speed=x_speed,
+                y_speed=y_speed,
+                yaw=DjiParser._to_angle(yaw),
+                home_lng=home_lng,
+                home_lat=home_lat,
+                uuid=DjiParser._get_uuid(uuid),
+                timestamp=datetime.now(),
+                oui=oui,
+            )
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
             return None
 
     @staticmethod
-    def parse_version_2(packet: Packet, oui: str) -> Optional[RemoteId]:
+    def parse_version_2(packet: Packet, oui: str) -> Optional[DjiMessage]:
         """
         Method to parse a vendor specific element of a Wi-Fi packet that contains version 2 of DJI's proprietary
         Remote ID.
@@ -112,7 +114,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[RemoteId]: Parsed Remote ID or None if parsing not possible.
+            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
         """
         message_start = Parser.header_size
         try:
@@ -129,32 +131,39 @@ class DjiParser(Parser):
             return None
 
         try:
-            pos = Position(lat=DjiParser._to_coordinate(lat), lng=DjiParser._to_coordinate(lng))
-        except ValueError as err:
-            logging.warning(f"Parsing of drone position failed with error: {err}")
+            lat = DjiParser._to_coordinate(lat)
+            lng = DjiParser._to_coordinate(lng)
+            home_lat = DjiParser._to_coordinate(home_lat)
+            home_lng = DjiParser._to_coordinate(home_lng)
+            pilot_lat = DjiParser._to_coordinate(pilot_lat)
+            pilot_lng = DjiParser._to_coordinate(pilot_lng)
+        except Exception as err:
+            logging.warning(f"Parsing of coordinates failed with error: {err}")
             return None
 
-        home_pos = Position(lat=DjiParser._to_coordinate(home_lat),
-                            lng=DjiParser._to_coordinate(home_lng),
-                            default=True)
-
-        pilot_pos = Position(lat=DjiParser._to_coordinate(pilot_lat),
-                             lng=DjiParser._to_coordinate(pilot_lng),
-                             default=True)
-
-        spoofed = is_spoofed(pos, pilot_pos)
-
         try:
-            return RemoteId(lng=pos.lng, lat=pos.lat, height=height / 10, yaw=DjiParser._to_angle(yaw), x_speed=x_speed,
-                            y_speed=y_speed, timestamp=datetime.now(), pilot_lat=pilot_pos.lat, pilot_lng=pilot_pos.lng,
-                            oui=oui, home_lng=home_pos.lng, home_lat=home_pos.lat, uuid=DjiParser._get_uuid(uuid),
-                            serial_number=serial_number.decode('utf-8').rstrip('\u0000'), spoofed=spoofed)
+            return DjiMessage(
+                serial_number=serial_number.decode('utf-8').rstrip('\u0000'),
+                lng=lng,
+                lat=lat,
+                height=height / 10,
+                x_speed=x_speed,
+                y_speed=y_speed,
+                yaw=DjiParser._to_angle(yaw),
+                home_lng=home_lng,
+                home_lat=home_lat,
+                uuid=DjiParser._get_uuid(uuid),
+                timestamp=datetime.now(),
+                oui=oui,
+                pilot_lat=pilot_lat,
+                pilot_lng=pilot_lng
+            )
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
             return None
 
     @staticmethod
-    def parse_version_2_lte(packet: Packet, oui: str) -> Optional[RemoteId]:
+    def parse_version_2_lte(packet: Packet, oui: str) -> Optional[DjiMessage]:
         """
         Method to parse a vendor specific element of a LTE packet that contains version 2 of DJI's proprietary
         Remote ID.
@@ -164,7 +173,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[RemoteId]: Parsed Remote ID or None if parsing not possible.
+            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
         """
         try:
             unpacked = struct.unpack(DjiParser._version_2_format, packet[3:DjiParser.lte_max_len])
@@ -180,27 +189,60 @@ class DjiParser(Parser):
             return None
 
         try:
-            pos = Position(lat=DjiParser._to_coordinate(lat), lng=DjiParser._to_coordinate(lng))
-        except ValueError as err:
+            lat = DjiParser._to_coordinate(lat)
+            lng = DjiParser._to_coordinate(lng)
+            home_lat = DjiParser._to_coordinate(home_lat)
+            home_lng = DjiParser._to_coordinate(home_lng)
+            pilot_lat = DjiParser._to_coordinate(pilot_lat)
+            pilot_lng = DjiParser._to_coordinate(pilot_lng)
+        except Exception as err:
             logging.warning(err)
             return None
 
-        home_pos = Position(lat=DjiParser._to_coordinate(home_lat),
-                            lng=DjiParser._to_coordinate(home_lng),
-                            default=True)
-
-        pilot_pos = Position(lat=DjiParser._to_coordinate(pilot_lat),
-                             lng=DjiParser._to_coordinate(pilot_lng),
-                             default=True)
-
-        spoofed = is_spoofed(pos, pilot_pos)
-
         try:
-            return RemoteId(lng=pos.lng, lat=pos.lat, height=height / 10, yaw=DjiParser._to_angle(yaw), x_speed=x_speed,
-                            y_speed=y_speed, timestamp=datetime.now(), pilot_lat=pilot_pos.lat,
-                            pilot_lng=pilot_pos.lng, oui=oui, home_lng=home_pos.lng, home_lat=home_pos.lat,
-                            uuid=DjiParser._get_uuid(uuid),
-                            serial_number=serial_number.decode('utf-8').rstrip('\u0000'), spoofed=spoofed)
+            return DjiMessage(
+                serial_number=serial_number.decode('utf-8').rstrip('\u0000'),
+                lng=lng,
+                lat=lat,
+                height=height / 10,
+                x_speed=x_speed,
+                y_speed=y_speed,
+                yaw=DjiParser._to_angle(yaw),
+                home_lng=home_lng,
+                home_lat=home_lat,
+                uuid=DjiParser._get_uuid(uuid),
+                timestamp=datetime.now(),
+                oui=oui,
+                pilot_lat=pilot_lat,
+                pilot_lng=pilot_lng
+            )
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
+            return None
+
+    @staticmethod
+    def from_wifi(packet: Packet, oui: str) -> Optional[DjiMessage]:
+        """
+        Parse a DJI Remote ID packet from a Wi-Fi packet, automatically detecting and handling the protocol version.
+        
+        Args:
+            packet: The Wi-Fi packet containing DJI Remote ID data
+            oui: The Organizationally Unique Identifier of the packet
+            
+        Returns:
+            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible
+        """
+        try:
+            _, _, msg_type = DjiParser.extract_header(packet)
+            
+            if msg_type == DjiParser.protocol_v1:
+                return DjiParser.parse_version_1(packet, oui)
+            elif msg_type == DjiParser.protocol_v2:
+                return DjiParser.parse_version_2(packet, oui)
+            else:
+                logging.info("Unknown DJI protocol version detected")
+                return None
+                
+        except Exception as e:
+            logging.error(f"Failed to parse DJI message: {e}")
             return None
