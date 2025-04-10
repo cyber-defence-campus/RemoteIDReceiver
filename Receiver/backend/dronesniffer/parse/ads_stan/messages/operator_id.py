@@ -16,8 +16,3 @@ class OperatorIdMessage(DirectRemoteIdMessage):
 
   # Operator ID
   operator_id: str
-
-  def to_generic(self):
-    return RemoteId(
-      pilot_registration_number=self.operator_id,
-    )   

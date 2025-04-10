@@ -9,7 +9,7 @@ from api import app
 from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
-from drone_sniffer import filter_frames
+from packet_processor import process_packet
 from parsing_queue import ParsingQueue
 
 ####
@@ -91,11 +91,12 @@ def main():
     # Parsing Queue.
     # Whenever a packet is received, it will be submitted to the queue
     # and processed by the worker threads.
-    parsing_queue = ParsingQueue(process_packet_function=filter_frames, num_workers=4, max_queue_size=0)
-    parsing_queue.start()
+    parsing_queue = ParsingQueue(process_packet_function=process_packet, num_workers=1000, max_queue_size=0)
     
     # setup sniff manager
+    # whenever a message is sniffed, it will be passed to the parsing queue
     sniff_manager = SniffManager(on_packet_received=parsing_queue.submit)
+
 
     # setup signal handlers for graceful shutdown
     signal.signal(signal.SIGINT, shutdown(sniff_manager, parsing_queue))
@@ -105,6 +106,7 @@ def main():
         if file or lte:
             LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
+            parsing_queue.start()
 
         
         # Start sniffing on the interfaces 

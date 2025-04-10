@@ -72,17 +72,3 @@ class LocationVectorMessage(DirectRemoteIdMessage):
   accuracy_speed: int
   accuracy_barometric_altitude: int
   accuracy_timestamp: int
-
-  def to_generic(self):
-    return RemoteId(
-      operational_status=self.operational_status,
-      x_speed=self.speed,
-      y_speed=self.vertical_speed,
-      lat=self.latitude,
-      lng=self.longitude,
-      altitude=self.altitude_barometric,
-      height=self.height_above_takeoff,
-      accuracy_horizontal=self.accuracy_horizontal,
-      accuracy_vertical=self.accuracy_vertical,
-      accuracy_velocity=self.accuracy_speed,
-    )

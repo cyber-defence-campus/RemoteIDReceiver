@@ -3,7 +3,7 @@ import logging
 import pytest
 from scapy.layers.dot11 import Dot11, Dot11Beacon, Dot11Elt, RadioTap, Dot11EltVendorSpecific
 
-from drone_sniffer import filter_frames
+from packet_processor import process_packet
 from parse.dji.parser import DjiParser
 from parse.ads_stan.parser import DirectRemoteIdMessageParser
 from parse.parser_service import parser
@@ -47,6 +47,6 @@ class TestFilterFrames:
     def test_when_real_drone_frame_then_log(self, caplog, test_beacon_frame):
         caplog.set_level(logging.INFO)
 
-        filter_frames(test_beacon_frame)
+        process_packet(test_beacon_frame)
 
         assert "spoofer oui" in caplog.text

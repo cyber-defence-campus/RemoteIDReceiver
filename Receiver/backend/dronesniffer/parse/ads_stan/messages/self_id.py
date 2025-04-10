@@ -14,11 +14,3 @@ class SelfIdMessage(DirectRemoteIdMessage):
 
   # Description
   description: str
-
-  def to_generic(self):
-    return RemoteId(
-      flight_purpose=self.description,
-    )
-
-
-

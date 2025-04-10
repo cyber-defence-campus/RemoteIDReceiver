@@ -1,6 +1,7 @@
 import logging
 import queue
 from concurrent.futures import ThreadPoolExecutor
+from scapy.all import Packet 
 
 LOG = logging.getLogger(__name__)
 
@@ -11,7 +12,7 @@ class ParsingQueue:
         self._running = True
         self.process_packet_function = process_packet_function
 
-    def submit(self, packet):
+    def submit(self, packet: Packet):
         try:
             LOG.debug(f"Submitting packet to queue: {packet}")
             self.packet_queue.put_nowait(packet)

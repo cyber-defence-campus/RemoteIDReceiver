@@ -48,12 +48,3 @@ class SystemMessage(DirectRemoteIdMessage):
   ua_class: int
 
   pilot_geodetic_altitude: int
-
-  
-  def to_generic(self):
-    return RemoteId(
-      ua_class=self.ua_class,
-      pilot_altitude=self.pilot_geodetic_altitude,
-      pilot_lat=self.pilot_latitude,
-      pilot_lng=self.pilot_longitude,
-    )

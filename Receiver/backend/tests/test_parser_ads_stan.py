@@ -224,26 +224,3 @@ class TestAdsStanParser:
     assert parsed.message_type == 0xF
     assert parsed.version == 0x0
     assert len(parsed.messages) == 4
-
-  def test_to_generic(self):
-    message_1 = self._setup_packet_type_0("test-id-1", 0x32)
-    message_2 = self._setup_packet_type_1()
-    message_4 = self._setup_packet_type_3("test-id-4", 201)
-    message_5 = self._setup_packet_type_4()
-    message_6 = self._setup_packet_type_5("operator-id", 242)
-    
-    messages = [message_1, message_2,  message_4, message_5, message_6]
-    
-    packet = self._setup_packet_type_f(messages)
-    
-    parsed = DirectRemoteIdMessageParser.parse(packet)
-    
-    generic = parsed.to_generic()
-
-    assert generic.serial_number == "test-id-1"
-    assert generic.pilot_registration_number == "operator-id"
-    assert generic.pilot_lat == pytest.approx(47.2)
-    
-    
-   
-    

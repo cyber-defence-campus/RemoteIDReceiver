@@ -36,8 +36,3 @@ class BasicIdMessage(DirectRemoteIdMessage):
   # UAS ID
   uas_id: str
   
-  def to_generic(self):
-    return RemoteId(
-      serial_number=self.uas_id,
-      ua_type=self.ua_type,
-    )
