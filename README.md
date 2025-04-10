@@ -1,5 +1,5 @@
 # Drone Remote ID Monitoring System
-This repository is the public repository for the Bachelor Thesis on a "Building an Accessible and Affordable Drone Monitoring System Based on Remote ID". It contains code and documents related to the web application developed as part of this bachelor's thesis. The contents are organized as follows:
+This repository is the public repository for the Bachelor Thesis on a "Building an Accessible and Affordable Drone Monitoring System Based on drone Remote ID". It contains code and documents related to the web application developed as part of this bachelor's thesis. The contents are organized as follows:
 
 + The **Bachelor_Thesis.pdf** is the final report of the project.
 + The **Receiver** folder contains all the code for the developed web application.
