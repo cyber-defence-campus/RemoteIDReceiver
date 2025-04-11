@@ -1,27 +1,10 @@
 # Drone Remote ID Monitoring System
-This repository is the public repository for the Bachelor Thesis on a "Building an Accessible and Affordable Drone Monitoring System Based on Remote ID". It contains code and documents related to the web application developed as part of this bachelor's thesis. The contents are organized as follows:
-
-+ The **Bachelor_Thesis.pdf** is the final report of the project.
-+ The **Receiver** folder contains all the code for the developed web application.
-
-This system was developed to monitor drones via Remote IDs. The 
-system supports DJI's proprietary format as well as the ASD-STAN format. 
-It currently monitors drones via Remote IDs transmitted over Wi-Fi. It is designed to 
-be easily extended with additional formats as well as 
-sniffing types.
-
-**Disclaimer:** This repository was created by students as part of a Bachelor thesis. It is not meant to be maintained nor updated. It is a  proof of concept and is not intended for production use. The authors do not take any responsibility or liability for the use of the software. Please exercise caution and use at your own risk.
-
-
-**Note:** A [spoofer program](https://github.com/cyber-defence-campus/droneRemoteID_spoofer),  which is able to spoof fake Remote ID information is kept in a separate repository. The spoofed Remote IDs can be DJI's proprietary format as well as the ASD-STAN format and can be used to test the drone monitoring system in this repository.
-
+TODO
 ## Authors
 The work in this project was  done by:
-- [Fabia Müller](https://github.com/alessmlr), Zurich University of Applied Sciences
-- [Sebastian Brunner](https://github.com/Wernerson),Zurich University of Applied Sciences
+- Sven Fahrni
 
 and supervised by:
-- [Prof. Dr. Marc Rennhard](https://github.com/rennhard),  Zurich University of Applied Sciences
 - [Llorenç Romá](https://github.com/llorencroma),  Cyber-Defence Campus
   
 ## Installation
