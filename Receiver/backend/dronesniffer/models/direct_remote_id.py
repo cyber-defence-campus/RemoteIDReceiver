@@ -3,7 +3,10 @@ from sqlalchemy.orm import declarative_base
 from datetime import datetime, timezone
 
 Base = declarative_base()
-from sqlmodel import Field, SQLModel
+
+### 
+# ADS-STAN Messages
+###
 
 class BasicIdMessage(Base):
     """Basic ID Message (type 0x0)"""
@@ -11,7 +14,7 @@ class BasicIdMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x0)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 
@@ -28,7 +31,7 @@ class LocationMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x1)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 
@@ -58,7 +61,7 @@ class SelfIdMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x3)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 
@@ -74,7 +77,7 @@ class SystemMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x4)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 
@@ -99,7 +102,7 @@ class OperatorMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x5)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 
@@ -109,6 +112,9 @@ class OperatorMessage(Base):
     def __repr__(self):
         return f"<OperatorMessage(sender_id={self.sender_id}, operator_id={self.operator_id})>"
 
+###
+# DJI Messages
+###
 class DjiMessage(Base):
     """DJI Message """
     __tablename__ = 'dji_messages'
@@ -126,8 +132,6 @@ class DjiMessage(Base):
     dji_x_speed = Column(Float, nullable=True)
     dji_y_speed = Column(Float, nullable=True)
     dji_yaw = Column(Float, nullable=True)
-    dji_pitch = Column(Float, nullable=True)
-    dji_roll = Column(Float, nullable=True)
     dji_pilot_latitude = Column(Float, nullable=True)
     dji_pilot_longitude = Column(Float, nullable=True)
 

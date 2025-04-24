@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from .direct_remote_id import DirectRemoteIdMessage
-from models import RemoteId
 @dataclass
 class LocationVectorMessage(DirectRemoteIdMessage):
   

@@ -7,7 +7,7 @@ from parse.ads_stan.messages.self_id import SelfIdMessage as AdsSelfIdMessage
 from parse.ads_stan.messages.system_message import SystemMessage as AdsSystemMessage
 from parse.ads_stan.messages.operator_id import OperatorIdMessage as AdsOperatorMessage
 from parse.ads_stan.messages.message_pack import MessagePack
-
+from parse.dji.messages.dji_message import DjiMessage as ParsedDjiMessage
 from parse.parser_service import ParsedMessage
 from map.mapping_service import RemoteIdMapper
 from models.direct_remote_id import (
@@ -25,42 +25,52 @@ class TestRemoteIdMapper:
     def test_map_dji_message(self):
         """Test mapping of DJI message to DjiMessage model."""
         # Create DJI message
-        mock_dji_message = Mock()
-        mock_dji_message.message_type = 0xA
-        mock_dji_message.version = 1
-        mock_dji_message.serial_number = "DJI123456"
-        mock_dji_message.longitude = 8.123456
-        mock_dji_message.latitude = 47.123456
-        mock_dji_message.height = 100.5
-        mock_dji_message.x_speed = 10.0
-        mock_dji_message.y_speed = 5.0
-        mock_dji_message.yaw = 45.0
-        mock_dji_message.pitch = 10.0
-        mock_dji_message.roll = 5.0
-        mock_dji_message.pilot_latitude = 47.123457
-        mock_dji_message.pilot_longitude = 8.123457
+        message_type = 0xA
+        serial_number = "DJI123456"
+        longitude = 8.123456
+        latitude = 47.123456
+        height = 100.5
+        x_speed = 10.0
+        y_speed = 5.0
+        yaw = 45.0
+        pilot_latitude = 47.123457
+        pilot_longitude = 8.123457
 
-        parsed_message = ParsedMessage(provider="DJI", message=mock_dji_message)
+        mock_dji_message = ParsedDjiMessage(
+            serial_number=serial_number,
+            lng=longitude,
+            lat=latitude,
+            height=height,
+            x_speed=x_speed,
+            y_speed=y_speed,
+            yaw=yaw,
+            home_lng=longitude,
+            home_lat=latitude,
+            uuid="DJI123456",
+            timestamp=datetime.now(timezone.utc),
+            oui="DJI",
+            pilot_lat=pilot_latitude,
+            pilot_lng=pilot_longitude
+        )
+        parsed_message: DjiMessage = ParsedMessage(provider="DJI", message=mock_dji_message)
         
         # Map to database model
         result = RemoteIdMapper.to_db_model(parsed_message, "00:11:22:33:44:55")
-        
+
         # Verify result
         assert isinstance(result, DjiMessage)
-        assert result.message_type == 0xA
-        assert result.version == 1
+        assert result.message_type == message_type
         assert result.sender_id == "00:11:22:33:44:55"
-        assert result.serial_number == "DJI123456"
-        assert result.dji_longitude == pytest.approx(8.123456)
-        assert result.dji_latitude == pytest.approx(47.123456)
-        assert result.dji_height == pytest.approx(100.5)
-        assert result.dji_x_speed == pytest.approx(10.0)
-        assert result.dji_y_speed == pytest.approx(5.0)
-        assert result.dji_yaw == pytest.approx(45.0)
-        assert result.dji_pitch == pytest.approx(10.0)
-        assert result.dji_roll == pytest.approx(5.0)
-        assert result.dji_pilot_latitude == pytest.approx(47.123457)
-        assert result.dji_pilot_longitude == pytest.approx(8.123457)
+        assert result.serial_number == serial_number
+        assert result.dji_longitude == pytest.approx(longitude)
+        assert result.dji_latitude == pytest.approx(latitude)
+        assert result.dji_height == pytest.approx(height)
+        assert result.dji_x_speed == pytest.approx(x_speed)
+        assert result.dji_y_speed == pytest.approx(y_speed)
+        assert result.dji_yaw == pytest.approx(yaw)
+        assert result.dji_pilot_latitude == pytest.approx(pilot_latitude)
+        assert result.dji_pilot_longitude == pytest.approx(pilot_longitude)
+
 
     def test_map_basic_id_message(self):
         """Test mapping of Basic ID message to BasicIdMessage model."""

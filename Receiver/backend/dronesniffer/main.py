@@ -5,7 +5,7 @@ import colorlog
 import uvicorn
 import signal
 
-from api import app
+from api.api import app
 from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
