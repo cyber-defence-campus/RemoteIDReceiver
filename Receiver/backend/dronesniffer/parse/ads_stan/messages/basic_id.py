@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from models import RemoteId
 from .direct_remote_id import DirectRemoteIdMessage
 
 @dataclass

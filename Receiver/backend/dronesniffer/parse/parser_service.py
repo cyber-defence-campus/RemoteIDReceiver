@@ -7,7 +7,6 @@ from .ads_stan.messages.direct_remote_id import DirectRemoteIdMessage
 from .ads_stan.parser import DirectRemoteIdMessageParser
 from .dji.parser import DjiParser
 from .dji.messages.dji_message import DjiMessage
-from exceptions import ParseRemoteIdError
 
 @dataclass
 class ParsedMessage:

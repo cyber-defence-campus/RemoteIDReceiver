@@ -14,7 +14,7 @@ LOG = logging.getLogger(__name__)
 # Limit DB writes to a certain interval
 # This is to prevent flooding the database with too many writes
 # this is especially important because the target hardware is a raspberry pi with an sd-card as storage.
-time_buffer = TimeBuffer(1, on_flush=save_messages)
+time_buffer = TimeBuffer(interval_seconds=1, on_flush=save_messages)
 
 def process_packet(packet: Packet) -> None:
     """
@@ -41,6 +41,7 @@ def process_packet(packet: Packet) -> None:
                 # Map the parsed message to the DB model
                 mac_from = packet.addr2
                 db_models = mapper.to_db_models(parsed_message, mac_from)
+                LOG.debug(f"DB models: {db_models}")
                 
                 # Save the message to the database
                 for model in db_models:

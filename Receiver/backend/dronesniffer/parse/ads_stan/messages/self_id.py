@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from .direct_remote_id import DirectRemoteIdMessage
-from models import RemoteId
 @dataclass
 class SelfIdMessage(DirectRemoteIdMessage):
   message_type: int = field(init=False, default=0x3)

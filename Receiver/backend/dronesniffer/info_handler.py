@@ -2,9 +2,7 @@ import logging
 
 from sqlmodel import create_engine, SQLModel, Session
 
-from models import RemoteId
 from models.direct_remote_id import SystemMessage, Base, BasicIdMessage, LocationMessage, SelfIdMessage, OperatorMessage, DjiMessage
-from ws_manager import broadcast
 from typing import List
 import logging
 
@@ -26,19 +24,6 @@ def setup_database() -> None:
     LOG.info("setting up database and tables")
     SQLModel.metadata.create_all(engine)
     Base.metadata.create_all(engine)
-
-
-def save_drone_info(info: RemoteId) -> None:
-    """
-    Saves a drone flight info packet object to the db.
-
-    Args:
-        info (RemoteId): Drone info
-    """
-    broadcast(info)
-    with Session(engine) as session:
-        session.add(info)
-        session.commit()
 
 
 def save_messages(messages: List[SystemMessage | BasicIdMessage | LocationMessage | SelfIdMessage | OperatorMessage | DjiMessage]) -> None:

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from .direct_remote_id import DirectRemoteIdMessage
-from models import RemoteId
 
 
 @dataclass

@@ -70,20 +70,18 @@ class RemoteIdMapper:
         message = parsed_message.message
         return DjiMessage(
             message_type=0xA,  
-            version=message.version,
+            version=message.version if hasattr(message, 'version') else 0x0,
             sender_id=sender_id,
             received_at=datetime.now(timezone.utc),
             serial_number=message.serial_number,
-            dji_longitude=message.longitude,
-            dji_latitude=message.latitude,
+            dji_longitude=message.lng,
+            dji_latitude=message.lat,
             dji_height=message.height,
             dji_x_speed=message.x_speed,
             dji_y_speed=message.y_speed,
             dji_yaw=message.yaw,
-            dji_pitch=message.pitch,
-            dji_roll=message.roll,
-            dji_pilot_latitude=message.pilot_latitude,
-            dji_pilot_longitude=message.pilot_longitude
+            dji_pilot_latitude=message.pilot_lat,
+            dji_pilot_longitude=message.pilot_lng
         )
 
     @staticmethod
