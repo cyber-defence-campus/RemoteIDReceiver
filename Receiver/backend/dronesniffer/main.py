@@ -115,7 +115,7 @@ def main():
         sniff_manager.set_sniffing_interfaces(interfaces)
 
         LOG.info(f"Starting API on port {port}...")
-        uvicorn.run(app, host='0.0.0.0', port=port)
+        uvicorn.run(app(sniff_manager), host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         sys.exit(0)
 
