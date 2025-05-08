@@ -20,10 +20,10 @@ let client = axios
 let isInitialized = false
 if (import.meta.env.DEV && !isInitialized) {
   console.log('Development mode, mocking http requests')
-  // client = initializeMocks()
-  // initializeMockWebServer()
+  client = initializeMocks()
+  initializeMockWebServer()
   isInitialized = true
-  axios.defaults.baseURL = 'http://localhost:3001';
+  // axios.defaults.baseURL = 'http://localhost:3001';
 }
 
 async function getJsonResponse(url) {

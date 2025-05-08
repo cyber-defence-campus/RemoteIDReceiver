@@ -28,3 +28,17 @@ services:
     volumes:
       - ./resources:/app/resources
     command: python backend/dronesniffer/main.py 
+  
+  demo-drone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - FRONTEND_BUILD_COMMAND=build:google
+    ports:
+      - "80:80"
+    environment:
+      - PYTHONPATH=/app
+    volumes:
+      - ./resources:/app/resources
+    command: python backend/dronesniffer/main.py --file=./resources/wifi/parrot_anafi4_real.pcapng

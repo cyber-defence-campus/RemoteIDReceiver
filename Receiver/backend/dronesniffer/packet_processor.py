@@ -8,6 +8,11 @@ from parse.parser import Parser
 from parse.parser_service import parser
 from map.mapping_service import mapper
 from time_buffer import TimeBuffer
+from ws_manager import broadcast
+from models.direct_remote_id import DjiMessage, LocationMessage
+from models.dtomodels import MinimalDroneDto, Position
+from typing import List
+from pydantic import BaseModel
 
 LOG = logging.getLogger(__name__)
 
@@ -44,8 +49,10 @@ def process_packet(packet: Packet) -> None:
                 LOG.debug(f"DB models: {db_models}")
                 
                 # Save the message to the database
-                for model in db_models:
-                    time_buffer.add(model)
+                _save_db_models(db_models)
+
+                # if dji or location message, broadcast the message
+                _broadcast_location(db_models)
             break
         else:
             vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(Dot11EltVendorSpecific)
@@ -65,3 +72,20 @@ def _get_vendor_specific(packet: Packet) -> Dot11EltVendorSpecific:
         return packet.getlayer(Dot11EltVendorSpecific)
     else:
         return None
+
+def _save_db_models(db_models: List[BaseModel]) -> None:
+    """
+    Save the message to the database
+    """
+    for model in db_models:
+        time_buffer.add(model)
+
+def _broadcast_location(db_models: List[BaseModel]) -> None:
+    """
+    Broadcast the message to the websocket
+    """
+    for model in db_models:
+        if type(model) == DjiMessage:
+            broadcast(MinimalDroneDto(sender_id=model.sender_id, position=Position(lat=model.dji_latitude, lng=model.dji_longitude)))
+        elif type(model) == LocationMessage:
+            broadcast(MinimalDroneDto(sender_id=model.sender_id, position=Position(lat=model.latitude, lng=model.longitude)))
