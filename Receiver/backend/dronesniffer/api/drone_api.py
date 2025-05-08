@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from datetime import datetime, timedelta
-from models import DroneDto
+from models.dtomodels import DroneDto, MinimalDroneDto
 from services.drone_service_ads import DroneServiceAds
 from services.drone_service_dji import DroneServiceDji
 from settings import get_settings
@@ -23,14 +23,14 @@ def get_activity_offset() -> timedelta:
     settings = get_settings()
     return timedelta(minutes=settings.activity_offset_in_m)
 
-@router.get("/drones/active", response_model=list[str])
-def get_active_drones() -> list[str]:
+@router.get("/drones/active", response_model=list[MinimalDroneDto])
+def get_active_drones() -> list[MinimalDroneDto]:
     active_ads_stan = drone_serive_ads.get_active_drone_senders()
     active_dji = drone_service_dji.get_active_drone_senders()
     return list(set(active_ads_stan) | set(active_dji))
 
-@router.get("/drones/all", response_model=list[str])
-def get_all_drones() -> list[str]:
+@router.get("/drones/all", response_model=list[MinimalDroneDto])
+def get_all_drones() -> list[MinimalDroneDto]:
     all_ads_stan = drone_serive_ads.get_all_drone_senders()
     all_dji = drone_service_dji.get_all_drone_senders()
     return list(set(all_ads_stan) | set(all_dji))

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .drone_service import DroneService
 
 from models.direct_remote_id import (
@@ -8,7 +8,7 @@ from models.direct_remote_id import (
     LocationMessage, 
     SystemMessage, 
 )
-from models.dtomodels import DroneDto, Position
+from models.dtomodels import DroneDto, Position, MinimalDroneDto
 import logging
 
 class DroneServiceAds(DroneService):
@@ -17,22 +17,48 @@ class DroneServiceAds(DroneService):
     def __init__(self, db_enginge):
         self.db_engine = db_enginge
         
-    def get_all_drone_senders(self) -> List[str]:
-        # BasicID must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
+    def get_all_drone_senders(self) -> List[MinimalDroneDto]:
+        # Location must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
         with Session(self.db_engine) as session:
-            # Use distinct to get unique sender IDs
-            ids = session.query(BasicIdMessage.sender_id).distinct().all()
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                LocationMessage.sender_id,
+                LocationMessage.latitude,
+                LocationMessage.longitude,
+                LocationMessage.received_at
+            ).order_by(LocationMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.latitude,
+                subquery.c.longitude
+            ).group_by(subquery.c.sender_id).all()
+            
             # Extract sender IDs from the result
-            return [id[0] for id in ids]
+            return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
 
-    def get_active_drone_senders(self) -> List[str]:
-        # BasicID must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
-        time_threshold = datetime.now() - self._active_drone_max_age
+    def get_active_drone_senders(self) -> List[MinimalDroneDto]:
+        # Location must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
+        time_threshold = datetime.now(timezone.utc) - self._active_drone_max_age
+        
         with Session(self.db_engine) as session:
-            # Use distinct to get unique sender IDs
-            ids = session.query(BasicIdMessage.sender_id).filter(BasicIdMessage.received_at > time_threshold).distinct().all()
-            # Extract sender IDs from the result
-            return [id[0] for id in ids]
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                LocationMessage.sender_id,
+                LocationMessage.latitude,
+                LocationMessage.longitude,
+                LocationMessage.received_at
+            ).filter(LocationMessage.received_at > time_threshold)\
+             .order_by(LocationMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.latitude,
+                subquery.c.longitude
+            ).group_by(subquery.c.sender_id).all()
+
+            # Extract sender IDs from the result 
+            return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
 
     def get_drone_state(self, sender_id: str) -> DroneDto:
         with Session(self.db_engine) as session:

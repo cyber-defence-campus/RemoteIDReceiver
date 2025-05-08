@@ -1,7 +1,7 @@
 import abc
 from typing import List, Dict, Any
 from datetime import timedelta, datetime
-from models.dtomodels import DroneDto 
+from models.dtomodels import DroneDto, MinimalDroneDto
 
 
 class DroneService(abc.ABC):
@@ -12,7 +12,7 @@ class DroneService(abc.ABC):
     _active_drone_max_age: timedelta = timedelta(minutes=1) # Maximum age of a drone to be considered active
     
     @abc.abstractmethod
-    def get_all_drone_senders(self) -> List[str]:
+    def get_all_drone_senders(self) -> List[MinimalDroneDto]:
         """
         Get all drone senders
         
@@ -22,7 +22,7 @@ class DroneService(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_active_drone_senders(self) -> List[str]:
+    def get_active_drone_senders(self) -> List[MinimalDroneDto]:
         """
         Get all active drone senders
         

@@ -77,6 +77,23 @@ class DroneDto(BaseModel):
     spoofed: Optional[bool] = None
 
 
+
+class MinimalDroneDto(BaseModel):
+    """
+    Represents a drone.
+    """
+    sender_id: str
+    position: Position
+    spoofed: Optional[bool] = None
+
+    def __hash__(self):
+        return hash((self.sender_id, self.position.lat, self.position.lng))
+
+    def __eq__(self, other):
+        if not isinstance(other, MinimalDroneDto):
+            return False
+        return (self.sender_id == other.sender_id)
+
 class HistoryDto(BaseModel):
     """
     Represents a location at a specific time in the flight path of a drone.

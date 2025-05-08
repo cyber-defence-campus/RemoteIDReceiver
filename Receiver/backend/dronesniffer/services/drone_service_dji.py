@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from .drone_service import DroneService
-from models.dtomodels import DroneDto, Position
+from models.dtomodels import DroneDto, Position, MinimalDroneDto
 
 from models.direct_remote_id import (
     DjiMessage
@@ -13,16 +13,43 @@ class DroneServiceDji(DroneService):
     def __init__(self, db_engine):
         self.db_engine = db_engine
 
-    def get_all_drone_senders(self) -> List[str]:
+    def get_all_drone_senders(self) -> List[MinimalDroneDto]:
         with Session(self.db_engine) as session:
-            ids = session.query(DjiMessage.sender_id).distinct().all()
-        return [id[0] for id in ids]
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                DjiMessage.sender_id,
+                DjiMessage.dji_latitude,
+                DjiMessage.dji_longitude,
+                DjiMessage.received_at
+            ).order_by(DjiMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.dji_latitude,
+                subquery.c.dji_longitude
+            ).group_by(subquery.c.sender_id).all()
 
-    def get_active_drone_senders(self) -> List[str]:
-        time_threshold = datetime.now() - self._active_drone_max_age
+        return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
+
+    def get_active_drone_senders(self) -> List[MinimalDroneDto]:
+        time_threshold = datetime.now(timezone.utc) - self._active_drone_max_age
         with Session(self.db_engine) as session:
-            ids = session.query(DjiMessage.sender_id).filter(DjiMessage.received_at > time_threshold).distinct().all()
-        return [id[0] for id in ids]
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                DjiMessage.sender_id,
+                DjiMessage.dji_latitude,
+                DjiMessage.dji_longitude,
+                DjiMessage.received_at
+            ).filter(DjiMessage.received_at > time_threshold)\
+             .order_by(DjiMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.dji_latitude,
+                subquery.c.dji_longitude
+            ).group_by(subquery.c.sender_id).all()
+
+        return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
 
     def get_drone_state(self, sender_id: str) -> DroneDto:
         with Session(self.db_engine) as session:

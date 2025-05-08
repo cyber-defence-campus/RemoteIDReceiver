@@ -31,22 +31,24 @@ class TestDroneServiceAds(unittest.TestCase):
 
     def test_get_all_drone_senders(self):
         # Add test data to the session
-        self._session.add(BasicIdMessage(sender_id="sender1"))
-        self._session.add(BasicIdMessage(sender_id="sender2"))
+        self._session.add(LocationMessage(sender_id="sender1", latitude=10.0, longitude=20.0))
+        self._session.add(LocationMessage(sender_id="sender2", latitude=10.0, longitude=20.0))
         self._session.commit()
 
         result = self.service.get_all_drone_senders()
-        self.assertEqual(result, ["sender1", "sender2"])
+        self.assertEqual(result[0].sender_id, "sender1")
+        self.assertEqual(result[1].sender_id, "sender2")
 
     def test_get_active_drone_senders(self):
         # Add test data to the session
         now = datetime.now()
-        self._session.add(BasicIdMessage(sender_id="active_sender1", received_at=now))
-        self._session.add(BasicIdMessage(sender_id="active_sender2", received_at=now - timedelta(seconds=2)))
+        self._session.add(LocationMessage(sender_id="active_sender1", latitude=10.0, longitude=20.0, received_at=now))
+        self._session.add(LocationMessage(sender_id="active_sender2", latitude=10.0, longitude=20.0, received_at=now - timedelta(seconds=2)))
         self._session.commit()
 
         result = self.service.get_active_drone_senders()
-        self.assertEqual(result, ["active_sender1", "active_sender2"])
+        self.assertEqual(result[0].sender_id, "active_sender1")
+        self.assertEqual(result[1].sender_id, "active_sender2")
 
     def test_get_drone_state(self):
         # Add test data to the session

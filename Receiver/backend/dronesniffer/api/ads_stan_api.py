@@ -11,7 +11,7 @@ router = APIRouter()
 class BasicIdMessageDto(BaseModel):
     sender_id: str
     uas_id: str | None
-
+    received_at: datetime
     class Config:
         from_attributes = True
 
@@ -19,6 +19,7 @@ class LocationMessageDto(BaseModel):
     sender_id: str
     latitude: float | None
     longitude: float | None
+    received_at: datetime
 
     class Config:
         from_attributes = True
