@@ -2,7 +2,7 @@ import datetime
 import logging
 from typing import Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 __all__ = ["Position", "DroneDto", "HistoryDto"]
 
@@ -22,13 +22,13 @@ class Position(BaseModel):
     lat: float = None
     lng: float = None
 
-    class Config:
-        validate_assignment = True
-
-    @validator("lat")
-    def check_lat(cls, v, values):
+    model_config = {
+        'validate_assignment': True
+    }
+    @field_validator("lat")
+    def check_lat(cls, v, info):
         if v > 90 or v < -90:
-            if values["default"]:
+            if info.data.get("default", False):
                 logging.warning(f"Latitude must be between -90 and 90. Was {v}. Setting latitude to None.")
                 return None
             else:
@@ -36,10 +36,10 @@ class Position(BaseModel):
         else:
             return v
 
-    @validator("lng")
-    def check_lng(cls, v, values):
+    @field_validator("lng")
+    def check_lng(cls, v, info):
         if v > 180 or v < -180:
-            if values["default"]:
+            if info.data.get("default", False):
                 logging.warning(f"Longitude must be between -180 and 180. Was {v}. Setting longitude to None.")
                 return None
             else:
@@ -76,6 +76,23 @@ class DroneDto(BaseModel):
     z_speed: Optional[float] = None
     spoofed: Optional[bool] = None
 
+
+
+class MinimalDroneDto(BaseModel):
+    """
+    Represents a drone.
+    """
+    sender_id: str
+    position: Position
+    spoofed: Optional[bool] = None
+
+    def __hash__(self):
+        return hash((self.sender_id, self.position.lat, self.position.lng))
+
+    def __eq__(self, other):
+        if not isinstance(other, MinimalDroneDto):
+            return False
+        return (self.sender_id == other.sender_id)
 
 class HistoryDto(BaseModel):
     """

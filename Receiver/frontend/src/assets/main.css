@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+
+:root {
+  --size: 4rem;
+  --hue: -15deg;
+}
+
+html,
+body,
+body > div:first-child {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  font-size: 0.9rem;
+}
+
+button {
+  cursor: pointer;
+}
+
+.button {
+  @apply cursor-pointer text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800;
+}
+
+h2 {
+  @apply text-2xl font-bold mb-4;
+}
+
+h3 {
+  @apply text-xl font-bold mb-2;
+}
+
+.drone-marker {
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  transition: all 0.1s;
+  filter: grayscale(100%);
+  animation: drone 3s infinite ease-in-out;
+}
+.drone-marker::before {
+  content: ' ';
+  display: block;
+  width: 110%;
+  margin-left: -5%;
+  height: 100%;
+  background-image: url('/src/assets/img/body.svg');
+  background-size: cover;
+  animation: all 2.5s infinite ease-in-out;
+}

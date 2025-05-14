@@ -1,0 +1,47 @@
+{
+  "name": "remote-id-receiver-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:google": "npm run dev --style-name=google",
+    "dev:swiss": "npm run dev --style-name=swiss_satellite",
+    "build": "vite build",
+    "build:google": "npm run build --style-name=google",
+    "build:swiss": "npm run build --style-name=swiss_satellite",
+    "preview": "vite preview",
+    "test:unit": "vitest",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@tailwindcss/vite": "^4.0.11",
+    "@vueuse/core": "^12.8.2",
+    "axios": "^1.8.2",
+    "axios-mock-adapter": "^2.1.0",
+    "maplibre-gl": "^5.2.0",
+    "maplibre-google-maps": "^1.1.0",
+    "pinia": "^3.0.1",
+    "tailwindcss": "^4.0.11",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/eslint-plugin": "1.1.31",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.20.1",
+    "eslint-plugin-vue": "^9.32.0",
+    "jsdom": "^26.0.0",
+    "prettier": "^3.5.1",
+    "vite": "^6.1.0",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vitest": "^3.0.5"
+  }
+}

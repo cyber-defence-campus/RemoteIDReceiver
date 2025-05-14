@@ -1,9 +1,7 @@
 import asyncio
 
 from fastapi import WebSocket
-
-from models import RemoteId
-
+from models.dtomodels import MinimalDroneDto
 __all__ = ["create_manager", "broadcast"]
 
 
@@ -20,7 +18,7 @@ class ConnectionManager:
         self._ws = ws
         self._message_queue = asyncio.Queue()
 
-    def broadcast(self, remote_id: RemoteId) -> None:
+    def broadcast(self, remote_id) -> None:
         """
         Broadcasts remote_id info to the websocket connection.
 
@@ -65,7 +63,7 @@ def create_manager(ws: WebSocket) -> ConnectionManager:
     return manager
 
 
-def broadcast(remote_id: RemoteId) -> None:
+def broadcast(remote_id: MinimalDroneDto) -> None:
     """
     Broadcasts remote_id to all WS connections.
 
@@ -73,4 +71,5 @@ def broadcast(remote_id: RemoteId) -> None:
         remote_id (RemoteId): The RemoteId.
     """
     for manager in _managers:
+
         manager.broadcast(remote_id)

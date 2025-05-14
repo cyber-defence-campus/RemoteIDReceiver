@@ -1,0 +1,33 @@
+# Use Node.js LTS as base image
+FROM node:20-bookworm
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ruby \
+    ruby-dev \
+    build-essential \
+    default-jre \
+    graphviz \
+    plantuml \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Ruby gems
+RUN gem install asciidoctor asciidoctor-diagram asciidoctor-plantuml
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install project dependencies
+RUN npm install
+
+# Copy the rest of the project
+COPY . .
+
+EXPOSE 3000
+
+# Default command
+CMD ["npm", "run", "dev"] 
