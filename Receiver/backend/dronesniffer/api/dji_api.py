@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from info_handler import engine
 from models.direct_remote_id import DjiMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 router = APIRouter()
@@ -23,10 +23,8 @@ class DjiMessageDTO(BaseModel):
     dji_yaw: float | None
     dji_pilot_latitude: float | None
     dji_pilot_longitude: float | None
-
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 @router.get("/api/dji/all", response_model=list[DjiMessageDTO], description="Get all DJI messages")
 def get_basic_id_messages(sender_id: str = None) -> list[DjiMessageDTO]:
