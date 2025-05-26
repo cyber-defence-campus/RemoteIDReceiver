@@ -13,7 +13,7 @@ class TimeBuffer:
         self.lock = threading.Lock()
         self.running = True
 
-        self.thread = threading.Thread(target=self._flush_loop, daemon=True)
+        self.thread = threading.Thread(target=self.__flush_loop, daemon=True)
         self.thread.start()
 
     def add(self, data: Dict):
@@ -21,7 +21,7 @@ class TimeBuffer:
         with self.lock:
             self.buffer.append(data)
 
-    def _flush_loop(self):
+    def __flush_loop(self):
         while self.running:
             time.sleep(self.interval)
             self.flush()
