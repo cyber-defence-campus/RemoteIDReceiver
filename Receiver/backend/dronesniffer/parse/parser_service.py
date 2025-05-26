@@ -1,39 +1,25 @@
-from dataclasses import dataclass
-from typing import Optional, Dict, Type, List
+from typing import Optional, Dict
 from scapy.packet import Packet
 import logging
 
-from .ads_stan.messages.direct_remote_id import DirectRemoteIdMessage
 from .ads_stan.parser import DirectRemoteIdMessageParser
 from .dji.parser import DjiParser
-from .dji.messages.dji_message import DjiMessage
+from .parser import ParsedMessage, Parser
 
-@dataclass
-class ParsedMessage:
-    """Represents a parsed Remote ID message from any supported protocol."""
-    provider: str
-    message: DirectRemoteIdMessage | DjiMessage
-
-    @property
-    def is_ads_stan(self) -> bool:
-        return self.provider == "ADS-STAN"
-
-    @property
-    def is_dji(self) -> bool:
-        return self.provider == "DJI"
-
-class RemoteIdParser:
+class ParserService:
     """Main service for parsing Remote ID messages from different protocols."""
+    
+    _parsers: Dict[str, tuple[Parser, str]] = {}
     
     def __init__(self):
         # Map of OUI to their respective parser classes and provider names
-        self._parsers: Dict[str, tuple[Type, str]] = {}
-        
-        # Register all parsers and their OUIs
-        self._register_parser(DjiParser, "DJI")
-        self._register_parser(DirectRemoteIdMessageParser, "ADS-STAN")
+        self._parsers: Dict[str, tuple[Parser, str]] = {}
 
-    def _register_parser(self, parser_class: Type, provider: str) -> None:
+        # Register all parsers and their OUIs
+        self.__register_parser(DjiParser, "DJI")
+        self.__register_parser(DirectRemoteIdMessageParser, "ADS-STAN")
+
+    def __register_parser(self, parser_class: Parser, provider: str) -> None:
         """Register a parser class and all its supported OUIs."""
         for oui in parser_class.oui:
             self._parsers[oui] = (parser_class, provider)
@@ -55,8 +41,7 @@ class RemoteIdParser:
         parser_class, provider = self._parsers[oui]
         
         try:
-            message = parser_class.from_wifi(packet, oui)
-            return ParsedMessage(provider=provider, message=message) if message else None
+            return parser_class.from_wifi(packet, oui)
         except Exception as e:
             logging.error(f"Unexpected error parsing {provider} message: {e}")
             return None
@@ -74,4 +59,4 @@ class RemoteIdParser:
         return oui in self._parsers
 
 # Create a singleton instance for easy access
-parser = RemoteIdParser() 
+parser = ParserService() 

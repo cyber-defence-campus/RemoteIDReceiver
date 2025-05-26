@@ -9,6 +9,8 @@ from .strategies.operator_id import OperatorIdParsingStrategy
 from .strategies.message_pack import MessagePackParsingStrategy
 from .messages.direct_remote_id import DirectRemoteIdMessage
 from ..parser import Parser
+from ..parser import ParsedMessage
+
 import struct
 
 from scapy.packet import Packet
@@ -16,7 +18,7 @@ from scapy.packet import Packet
 class DirectRemoteIdMessageParser(Parser):
     oui: List[str] = ["FA:0B:BC", "50:6F:9A"]  
     
-    _strategies = {
+    __strategies = {
         0x0: BasicIdParsingStrategy(),
         0x1: LocationVectorParsingStrategy(),
         # 0x2: ReservedParsingStrategy(),
@@ -35,7 +37,7 @@ class DirectRemoteIdMessageParser(Parser):
         msg_type = header >> 4  # first four bits represent the message type
         payload = data[1:]  # everything after is message type specific
         
-        strategy = DirectRemoteIdMessageParser._strategies.get(msg_type)
+        strategy = DirectRemoteIdMessageParser.__strategies.get(msg_type)
         if strategy is None:
             raise ValueError(f"Unknown message type: {msg_type}")
        
@@ -50,16 +52,16 @@ class DirectRemoteIdMessageParser(Parser):
             n_messages = struct.pack('B', n_messages)
             message_size = struct.pack('B', message_size)
             payload =  message_size + n_messages + data
-            strategy = DirectRemoteIdMessageParser._strategies.get(0xF)
+            strategy = DirectRemoteIdMessageParser.__strategies.get(0xF)
 
         parsed_message = strategy.parse(payload)
         return parsed_message
 
     @staticmethod
-    def from_wifi(packet: Packet, oui: str) -> Optional[DirectRemoteIdMessage]:
+    def from_wifi(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         @returns
-            - DirectRemoteIdMessage: Parsed message
+            - ParsedMessage: Parsed message
         """
         return DirectRemoteIdMessageParser.parse(packet[8:])
 

@@ -4,9 +4,6 @@ from .direct_remote_id import DirectRemoteIdMessage
 @dataclass
 class BasicIdMessage(DirectRemoteIdMessage):
   
-  message_type: int = field(init=False, default=0x0)
-  version: int = field(init=False, default=0x0)
-   
   # Identification type
   ## 0: None
   ## 1: Serial Number
@@ -34,4 +31,8 @@ class BasicIdMessage(DirectRemoteIdMessage):
   
   # UAS ID
   uas_id: str
+  
+  def __post_init__(self):
+    """Initialize the parent class after dataclass initialization."""
+    super().__init__(message_type=0x0, version=0x0)
   

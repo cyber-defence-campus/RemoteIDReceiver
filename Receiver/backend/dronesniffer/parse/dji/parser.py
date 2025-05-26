@@ -8,6 +8,7 @@ from scapy.packet import Packet
 
 from parse.parser import Parser
 from .messages.dji_message import DjiMessage
+from ..parser import ParsedMessage
 
 class DjiParser(Parser):
     """
@@ -50,7 +51,7 @@ class DjiParser(Parser):
         return byte_value.decode().rstrip('\x00').strip()
 
     @staticmethod
-    def parse_version_1(packet: Packet, oui: str) -> Optional[DjiMessage]:
+    def parse_version_1(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         Method to parse a vendor specific element of a Wi-Fi packet that contains version 1 of DJI's proprietary
         Remote ID.
@@ -60,7 +61,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
+            Optional[ParsedMessage]: Parsed DJI message or None if parsing not possible.
         """
         try:
             unpacked = struct.unpack(DjiParser._version_1_format, packet[Parser.header_size:])
@@ -85,7 +86,7 @@ class DjiParser(Parser):
             return None
 
         try:
-            return DjiMessage(
+            message = DjiMessage(
                 serial_number=serial_number.decode(),
                 lng=lng,
                 lat=lat,
@@ -99,12 +100,14 @@ class DjiParser(Parser):
                 timestamp=datetime.now(),
                 oui=oui,
             )
+
+            return message
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
             return None
 
     @staticmethod
-    def parse_version_2(packet: Packet, oui: str) -> Optional[DjiMessage]:
+    def parse_version_2(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         Method to parse a vendor specific element of a Wi-Fi packet that contains version 2 of DJI's proprietary
         Remote ID.
@@ -114,7 +117,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
+            Optional[ParsedMessage]: Parsed DJI message or None if parsing not possible.
         """
         message_start = Parser.header_size
         try:
@@ -142,7 +145,7 @@ class DjiParser(Parser):
             return None
 
         try:
-            return DjiMessage(
+            message = DjiMessage(
                 serial_number=serial_number.decode('utf-8').rstrip('\u0000'),
                 lng=lng,
                 lat=lat,
@@ -158,12 +161,14 @@ class DjiParser(Parser):
                 pilot_lat=pilot_lat,
                 pilot_lng=pilot_lng
             )
+
+            return message
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
             return None
 
     @staticmethod
-    def parse_version_2_lte(packet: Packet, oui: str) -> Optional[DjiMessage]:
+    def parse_version_2_lte(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         Method to parse a vendor specific element of a LTE packet that contains version 2 of DJI's proprietary
         Remote ID.
@@ -173,7 +178,7 @@ class DjiParser(Parser):
             oui (str): Vendor OUI.
 
         Returns:
-            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible.
+            Optional[ParsedMessage]: Parsed DJI message or None if parsing not possible.
         """
         try:
             unpacked = struct.unpack(DjiParser._version_2_format, packet[3:DjiParser.lte_max_len])
@@ -200,7 +205,7 @@ class DjiParser(Parser):
             return None
 
         try:
-            return DjiMessage(
+            message = DjiMessage(
                 serial_number=serial_number.decode('utf-8').rstrip('\u0000'),
                 lng=lng,
                 lat=lat,
@@ -216,12 +221,14 @@ class DjiParser(Parser):
                 pilot_lat=pilot_lat,
                 pilot_lng=pilot_lng
             )
+
+            return ParsedMessage(provider="DJI", message=message)
         except Exception as err:
             logging.warning(f"Error while parsing values for DJI Remote ID. extra: {err}")
             return None
 
     @staticmethod
-    def from_wifi(packet: Packet, oui: str) -> Optional[DjiMessage]:
+    def from_wifi(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         Parse a DJI Remote ID packet from a Wi-Fi packet, automatically detecting and handling the protocol version.
         
@@ -230,7 +237,7 @@ class DjiParser(Parser):
             oui: The Organizationally Unique Identifier of the packet
             
         Returns:
-            Optional[DjiMessage]: Parsed DJI message or None if parsing not possible
+            Optional[ParsedMessage]: Parsed DJI message or None if parsing not possible
         """
         try:
             _, _, msg_type = DjiParser.extract_header(packet)

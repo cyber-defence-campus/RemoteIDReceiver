@@ -2,8 +2,6 @@ from dataclasses import dataclass, field
 from .direct_remote_id import DirectRemoteIdMessage
 @dataclass
 class SelfIdMessage(DirectRemoteIdMessage):
-  message_type: int = field(init=False, default=0x3)
-  version: int = field(init=False, default=0x0)
   
   # Description type
   ## 0: Text description
@@ -13,3 +11,7 @@ class SelfIdMessage(DirectRemoteIdMessage):
 
   # Description
   description: str
+  
+  def __post_init__(self):
+    """Initialize the parent class after dataclass initialization."""
+    super().__init__(message_type=0x3, version=0x0)

@@ -121,7 +121,7 @@ class DjiMessage(Base):
 
     id = Column(Integer, primary_key=True)
     message_type = Column(Integer, nullable=False, default=0x6)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
+    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
     sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
     received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
 

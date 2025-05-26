@@ -52,10 +52,9 @@ class TestRemoteIdMapper:
             pilot_lat=pilot_latitude,
             pilot_lng=pilot_longitude
         )
-        parsed_message: DjiMessage = ParsedMessage(provider="DJI", message=mock_dji_message)
         
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message, "00:11:22:33:44:55")
+        result = RemoteIdMapper.to_db_model(mock_dji_message, "00:11:22:33:44:55")
 
         # Verify result
         assert isinstance(result, DjiMessage)
@@ -81,10 +80,8 @@ class TestRemoteIdMapper:
             uas_id="UAS123456"
         )
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=basic_id)
-        
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(basic_id, "00:11:22:33:44:55")
         
         # Verify result
         assert isinstance(result, BasicIdMessage)
@@ -117,10 +114,8 @@ class TestRemoteIdMapper:
             accuracy_timestamp=1
         )
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=location)
-        
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(location, "00:11:22:33:44:55")
         
         # Verify result
         assert isinstance(result, LocationMessage)
@@ -151,10 +146,8 @@ class TestRemoteIdMapper:
             description="Test Description"
         )
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=self_id)
-        
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(self_id, "00:11:22:33:44:55")
         
         # Verify result
         assert isinstance(result, SelfIdMessage)
@@ -180,10 +173,8 @@ class TestRemoteIdMapper:
             pilot_geodetic_altitude=100
         )
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=system)
-        
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(system, "00:11:22:33:44:55")
         
         # Verify result
         assert isinstance(result, SystemMessage)
@@ -209,10 +200,8 @@ class TestRemoteIdMapper:
             operator_id="OP123456"
         )
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=operator)
-        
         # Map to database model
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(operator, "00:11:22:33:44:55")
         
         # Verify result
         assert isinstance(result, OperatorMessage)
@@ -224,9 +213,8 @@ class TestRemoteIdMapper:
     def test_unknown_provider(self):
         """Test handling of unknown provider."""
         mock_message = Mock()
-        parsed_message = ParsedMessage(provider="UNKNOWN", message=mock_message)
         
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(mock_message, "00:11:22:33:44:55")
         assert result is None
 
     def test_unknown_message_type(self):
@@ -236,9 +224,7 @@ class TestRemoteIdMapper:
         mock_message.version = 1
         mock_message.sender_id = "00:11:22:33:44:55"
         
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=mock_message)
-        
-        result = RemoteIdMapper.to_db_model(parsed_message)
+        result = RemoteIdMapper.to_db_model(mock_message, "00:11:22:33:44:55")
         assert result is None
 
     def test_map_message_pack(self):
@@ -278,10 +264,8 @@ class TestRemoteIdMapper:
         # Create message pack containing multiple messages
         message_pack = MessagePack([basic_id, location, self_id])
 
-        parsed_message = ParsedMessage(provider="ADS-STAN", message=message_pack)
-        
         # Map to database models
-        results = RemoteIdMapper.to_db_models(parsed_message, "00:11:22:33:44:55")
+        results = RemoteIdMapper.to_db_models(message_pack, "00:11:22:33:44:55")
         
         # Verify results
         assert len(results) == 3

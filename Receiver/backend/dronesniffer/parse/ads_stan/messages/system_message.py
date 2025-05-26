@@ -3,9 +3,6 @@ from .direct_remote_id import DirectRemoteIdMessage
 
 @dataclass
 class SystemMessage(DirectRemoteIdMessage):
-  message_type: int = field(init=False, default=0x4)
-  version: int = field(init=False, default=0x0)
-
   # Classification Type
   ## 0 = Undeclared
   ## 1 = EU
@@ -47,3 +44,7 @@ class SystemMessage(DirectRemoteIdMessage):
   ua_class: int
 
   pilot_geodetic_altitude: int
+  
+  def __post_init__(self):
+    """Initialize the parent class after dataclass initialization."""
+    super().__init__(message_type=0x4, version=0x0)

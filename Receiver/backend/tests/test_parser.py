@@ -16,10 +16,7 @@ class TestParser:
     print("MEssage", parsed_message) 
     assert parsed_message is not None
     assert parsed_message.provider == "ADS-STAN"
-    assert parsed_message.message is not None
-    assert parsed_message.message.message_type == 0x0
-    assert parsed_message.is_ads_stan
-    assert not parsed_message.is_dji 
+    assert parsed_message.message_type == 0x0
 
   def test_dji_parser(self):
     test_parser = TestDjiV2Parser()
@@ -28,6 +25,3 @@ class TestParser:
     parsed_message = parser.from_wifi( wifi_header_dij + packet, '60:60:1F')
     assert parsed_message is not None
     assert parsed_message.provider == "DJI"
-    assert parsed_message.message is not None
-    assert not parsed_message.is_ads_stan
-    assert parsed_message.is_dji
