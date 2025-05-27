@@ -1,7 +1,7 @@
 import abc
 from typing import List, Dict, Any
 from datetime import timedelta, datetime
-from models.dtomodels import DroneDto, MinimalDroneDto
+from models.dtomodels import DroneDto, MinimalDroneDto, FlightPathPointDto
 
 
 class DroneService(abc.ABC):
@@ -59,7 +59,7 @@ class DroneService(abc.ABC):
         pass
         
     @abc.abstractmethod
-    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[Dict[str, Any]]:
+    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[FlightPathPointDto]:
         """
         Get the history of a specific flight for a drone
         
@@ -69,7 +69,7 @@ class DroneService(abc.ABC):
             activity_offset: Time offset to consider for flight history
         
         Returns:
-            List of dictionaries containing flight history data
+            List of FlightPathPointDto containing flight history data
         """
         pass
 

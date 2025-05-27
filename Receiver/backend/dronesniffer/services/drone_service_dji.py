@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from datetime import datetime, timedelta, timezone
 from .drone_service import DroneService
-from models.dtomodels import DroneDto, Position, MinimalDroneDto
+from models.dtomodels import DroneDto, Position, MinimalDroneDto, FlightPathPointDto
 
 from models.direct_remote_id import (
     DjiMessage
@@ -87,7 +87,7 @@ class DroneServiceDji(DroneService):
 
             return flight_start_times
 
-    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[Dict[str, Any]]:
+    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[FlightPathPointDto]:
         with Session(self.db_engine) as session:
             query = session.query(DjiMessage) \
                 .filter(DjiMessage.sender_id == sender_id) \
@@ -104,14 +104,11 @@ class DroneServiceDji(DroneService):
                 if drone.received_at > latest_timestamp + activity_offset:
                     break
 
-                path.append({
-                    "timestamp": drone.received_at,
-                    "position": {
-                        "latitude": drone.dji_latitude,
-                        "longitude": drone.dji_longitude,
-                        "altitude": drone.dji_height
-                    }
-                })
+                path.append(FlightPathPointDto(
+                    timestamp=drone.received_at,
+                    position=Position(lat=drone.dji_latitude, lng=drone.dji_longitude),
+                    altitude=drone.dji_height
+                ))
 
             return path
 

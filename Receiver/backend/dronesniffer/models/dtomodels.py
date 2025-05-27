@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator
 
-__all__ = ["Position", "DroneDto", "HistoryDto"]
+__all__ = ["Position", "DroneDto", "HistoryDto", "FlightPathPointDto"]
 
 
 class Position(BaseModel):
@@ -108,3 +108,16 @@ class HistoryDto(BaseModel):
     pos: Optional[Position]
     pilot_pos: Optional[Position]
     home_pos: Optional[Position]
+
+class FlightPathPointDto(BaseModel):
+    """
+    Represents a single point in a drone's flight path.
+
+    Attributes:
+        timestamp (datetime): The time when this position was recorded
+        position (Position): The position of the drone at this point
+        altitude (float, optional): The altitude of the drone at this point
+    """
+    timestamp: datetime.datetime
+    position: Position
+    altitude: Optional[float] = None

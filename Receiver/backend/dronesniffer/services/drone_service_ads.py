@@ -8,7 +8,7 @@ from models.direct_remote_id import (
     LocationMessage, 
     SystemMessage, 
 )
-from models.dtomodels import DroneDto, Position, MinimalDroneDto
+from models.dtomodels import DroneDto, Position, MinimalDroneDto, FlightPathPointDto
 import logging
 
 class DroneServiceAds(DroneService):
@@ -97,7 +97,7 @@ class DroneServiceAds(DroneService):
 
             return flight_start_times
     
-    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[Dict[str, Any]]:
+    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[FlightPathPointDto]:
         with Session(self.db_engine) as session:
             query = session.query(LocationMessage) \
                 .filter(LocationMessage.sender_id == sender_id) \
@@ -114,14 +114,11 @@ class DroneServiceAds(DroneService):
                 if drone.received_at > latest_timestamp + activity_offset:
                     break
             
-                path.append({
-                    "timestamp": drone.received_at,
-                    "position": {
-                        "latitude": drone.latitude,
-                        "longitude": drone.longitude,
-                        "altitude": drone.height_above_takeoff
-                    }
-                })
+                path.append(FlightPathPointDto(
+                    timestamp=drone.received_at,
+                    position=Position(lat=drone.latitude, lng=drone.longitude),
+                    altitude=drone.height_above_takeoff
+                ))
 
             return path
 

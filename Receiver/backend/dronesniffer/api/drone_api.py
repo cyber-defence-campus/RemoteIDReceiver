@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from datetime import datetime, timedelta
-from models.dtomodels import DroneDto, MinimalDroneDto
+from models.dtomodels import DroneDto, MinimalDroneDto, FlightPathPointDto
 from services.drone_service_ads import DroneServiceAds
 from services.drone_service_dji import DroneServiceDji
 from settings import get_settings
@@ -45,7 +45,7 @@ def get_flights(sender_id: str) -> list[datetime]:
     service = get_drone_service(sender_id)
     return service.get_drone_flight_start_times(sender_id, get_activity_offset())
 
-@router.get("/drones/{sender_id}/flights/{flight}", response_model=list[dict])
-def get_flight_history(sender_id: str, flight: datetime) -> list[dict]:
+@router.get("/drones/{sender_id}/flights/{flight}", response_model=list[FlightPathPointDto])
+def get_flight_history(sender_id: str, flight: datetime) -> list[FlightPathPointDto]:
     service = get_drone_service(sender_id)
     return service.get_flight_history(sender_id, flight, get_activity_offset()) 

@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta, timezone
 from services.drone_service_dji import DroneServiceDji
 from models.direct_remote_id import DjiMessage, Base
-from models.dtomodels import DroneDto, Position, MinimalDroneDto
+from models.dtomodels import DroneDto, Position, MinimalDroneDto, FlightPathPointDto
 from sqlmodel import create_engine, SQLModel
 
 class TestDroneServiceDji(unittest.TestCase):
@@ -115,9 +115,21 @@ class TestDroneServiceDji(unittest.TestCase):
         result = self.service.get_flight_history("drone1", datetime(2023, 1, 1, 12, 0, 0), timedelta(minutes=3))
         
         expected = [
-            {"timestamp": datetime(2023, 1, 1, 12, 0, 0), "position": {"latitude": 10.0, "longitude": 20.0, "altitude": 100}},
-            {"timestamp": datetime(2023, 1, 1, 12, 1, 0), "position": {"latitude": 10.1, "longitude": 20.1, "altitude": 101}},
-            {"timestamp": datetime(2023, 1, 1, 12, 2, 0), "position": {"latitude": 10.2, "longitude": 20.2, "altitude": 102}}
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 0, 0),
+                position=Position(lat=10.0, lng=20.0),
+                altitude=100
+            ),
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 1, 0),
+                position=Position(lat=10.1, lng=20.1),
+                altitude=101
+            ),
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 2, 0),
+                position=Position(lat=10.2, lng=20.2),
+                altitude=102
+            )
         ]
         self.assertEqual(result, expected)
 
@@ -131,7 +143,11 @@ class TestDroneServiceDji(unittest.TestCase):
         result = self.service.get_flight_history("drone4", datetime(2023, 1, 1, 12, 0, 0), timedelta(seconds=1))
         
         expected = [
-            {"timestamp": datetime(2023, 1, 1, 12, 0, 0), "position": {"latitude": 10.0, "longitude": 20.0, "altitude": 100}},
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 0, 0),
+                position=Position(lat=10.0, lng=20.0),
+                altitude=100
+            )
         ]
         self.assertEqual(result, expected)
 
