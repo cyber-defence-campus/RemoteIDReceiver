@@ -1,3 +1,4 @@
+import time
 import logging
 import os
 from threading import Thread, Event
@@ -53,7 +54,13 @@ class WiFiInterfaceSniffer:
         self.on_packet_received = on_packet_received
         self.sniffer = AsyncSniffer(
             iface=interface,
-            prn=on_packet_received
+            prn=on_packet_received,
+            store=False,
+
+            # the following filter can be used if only ASD-Standard is supported
+            # support for DJI has not been checked yet
+            # filter="type mgt subtype beacon and (wlan addr1 ff:ff:ff:ff:ff:ff or wlan addr2 ff:ff:ff:ff:ff:ff or wlan addr3 ff:ff:ff:ff:ff:ff)"
+            
         )
 
     def start(self) -> bool:
@@ -102,7 +109,8 @@ class WiFiFileSniffer:
         self.on_packet_received = on_packet_received
         self.sniffer = AsyncSniffer(
             offline=filename,
-            prn=on_packet_received
+            prn=on_packet_received,
+            store=False,
         )
 
     def start(self) -> bool:
