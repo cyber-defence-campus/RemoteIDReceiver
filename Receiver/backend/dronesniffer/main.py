@@ -106,7 +106,8 @@ def main():
         if file or lte:
             LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
-            parsing_queue.start()
+        
+        parsing_queue.start()
 
         
         # Start sniffing on the interfaces 
