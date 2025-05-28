@@ -1,5 +1,6 @@
 import datetime
 import logging
+import json
 from typing import Optional
 
 from pydantic import BaseModel, field_validator
@@ -93,6 +94,9 @@ class MinimalDroneDto(BaseModel):
         if not isinstance(other, MinimalDroneDto):
             return False
         return (self.sender_id == other.sender_id)
+
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__)
 
 class HistoryDto(BaseModel):
     """

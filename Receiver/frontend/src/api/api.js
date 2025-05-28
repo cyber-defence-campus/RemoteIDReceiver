@@ -23,7 +23,6 @@ if (import.meta.env.DEV && !isInitialized) {
   client = initializeMocks()
   initializeMockWebServer()
   isInitialized = true
-  // axios.defaults.baseURL = 'http://localhost:3001';
 }
 
 async function getJsonResponse(url) {
@@ -57,9 +56,13 @@ export const postSettings = async (settings) => {
 export const initWebSocket = () => {
   const store = useMapStore();
 
-  const ws = new WebSocket(`ws://${window.location.host}/ws`);
+  let wsl = "ws://" + window.location.host + "/ws"
+
+  const ws = new WebSocket(wsl);
   ws.onmessage = (event) => {
-    const drone = JSON.parse(event.data);
-    store.updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
+    const drones = JSON.parse(event.data);
+    for (const drone of drones) {
+      store.updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
+    }
   };
 }
