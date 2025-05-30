@@ -6,38 +6,45 @@ from typing import Callable, List, Dict
 LOG = logging.getLogger(__name__)
 
 class TimeBuffer:
+    
+    __interval_s: int
+    __on_flush: Callable[[List[Dict]], None]
+    __buffer: List[Dict]
+    __lock: threading.Lock
+    __running: bool
+    
     def __init__(self, interval_seconds: int, on_flush: Callable[[List[Dict]], None]):
-        self.interval = interval_seconds
-        self.on_flush = on_flush
-        self.buffer = []
-        self.lock = threading.Lock()
-        self.running = True
+        self.__interval_s = interval_seconds
+        self.__on_flush = on_flush
+        self.__buffer = []
+        self.__lock = threading.Lock()
+        self.__running = True
 
         self.thread = threading.Thread(target=self.__flush_loop, daemon=True)
         self.thread.start()
 
     def add(self, data: Dict):
         """Add data to the buffer."""
-        with self.lock:
-            self.buffer.append(data)
+        with self.__lock:
+            self.__buffer.append(data)
 
     def __flush_loop(self):
-        while self.running:
-            time.sleep(self.interval)
+        while self.__running:
+            time.sleep(self.__interval_s)
             self.flush()
 
     def flush(self):
         """Flush buffer and call on_flush callback."""
-        with self.lock:
-            if not self.buffer:
+        with self.__lock:
+            if not self.__buffer:
                 return
-            data_to_send = self.buffer
-            self.buffer = []
+            data_to_send = self.__buffer
+            self.__buffer = []
         try:
-            self.on_flush(data_to_send)
+            self.__on_flush(data_to_send)
         except Exception as e:
             logging.error(f"Error in on_flush callback: {e}")
 
     def stop(self):
-        self.running = False
+        self.__running = False
         self.thread.join()
