@@ -42,7 +42,7 @@ cp .env.example .env
 2. Configure map service:
 - Default: Free map with basic details
 - Google Maps: Uncomment `FRONTEND_MAP_STYLE=google` and add your [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key)
-- Self-hosted: Configure your own tile server for offline functionality
+- Self-hosted: Advanced users can configure their own tile server for offline functionality [here](README_TILESERVER.md).
 
 ### 4. Build the Frontend
 The following command builds your frontend using your configured map.
