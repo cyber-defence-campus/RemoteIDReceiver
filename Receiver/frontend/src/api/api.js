@@ -54,6 +54,8 @@ export const postSettings = async (settings) => {
 }
 
 export const initWebSocket = () => {
+  if(import.meta.env.DEV) return; // WebSocket is not required in mock mode
+
   const store = useMapStore();
 
   let wsl = "ws://" + window.location.host + "/ws"

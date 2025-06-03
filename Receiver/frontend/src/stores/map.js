@@ -40,8 +40,6 @@ export const useMapStore = defineStore('map', () => {
     const drones = await getActiveDrones()
     drones.forEach(drone => {
       updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
-
-      console.log(drone)
     })
 
     activeDrones.value = drones.map(drone => new ActiveDrone(drone.sender_id))
