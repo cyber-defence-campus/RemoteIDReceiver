@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from fastapi.testclient import TestClient
-from models.dtomodels import MinimalDroneDto, Position, DroneDto
+from models.dtomodels import MinimalDroneDto, Position, DroneDto, FlightPathPointDto
+from typing import List
 from api.drone_api import router, get_active_drones
 from datetime import datetime, timedelta
 
@@ -155,9 +156,17 @@ class TestDroneApi(unittest.TestCase):
         mock_service = MagicMock()
         mock_offset = timedelta(minutes=10)
         flight_time = "2023-01-01T10:00:00"
-        history_data = [
-            {"timestamp": "2023-01-01T10:00:00", "lat": 10.0, "lng": 20.0},
-            {"timestamp": "2023-01-01T10:01:00", "lat": 10.1, "lng": 20.1}
+        history_data: List[FlightPathPointDto] = [
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 10, 0, 0),
+                position=Position(lat=10.0, lng=20.0),
+                altitude=100
+            ),
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 10, 1, 0),
+                position=Position(lat=10.1, lng=20.1),
+                altitude=101
+            )
         ]
         
         mock_service.get_flight_history.return_value = history_data
@@ -177,8 +186,8 @@ class TestDroneApi(unittest.TestCase):
         # Verify response content
         data = response.json()
         self.assertEqual(len(data), 2)
-        self.assertEqual(data[0]["lat"], 10.0)
-        self.assertEqual(data[1]["lat"], 10.1)
+        self.assertEqual(data[0]["position"]["lat"], 10.0)
+        self.assertEqual(data[1]["position"]["lat"], 10.1)
     
 
 if __name__ == '__main__':
