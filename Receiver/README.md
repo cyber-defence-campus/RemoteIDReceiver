@@ -16,7 +16,7 @@ A web-based application for monitoring and tracking drones using WiFi signals. T
 - Linux-based operating system (for WiFi monitor mode support)
 - Sudo privileges (required for monitor mode access)
 
-*Note:  egular wifi cards often lack support of monitoring-mode. This mode is required to listen to all network traffic.*
+*Note:  Regular wifi cards often lack support of monitoring-mode. This mode is required to listen to all network traffic.*
 
 ## Installation
 
