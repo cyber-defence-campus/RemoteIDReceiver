@@ -2,32 +2,32 @@
 const dronePositionsMap = new Map()
 const dronePathsMap = new Map()
 
-export function getDroneLocation(serialNumber) {
-  if(!dronePositionsMap.has(serialNumber)) {
+export function getDroneLocation(sender_id) {
+  if(!dronePositionsMap.has(sender_id)) {
     return null
   }
-  return dronePositionsMap.get(serialNumber).geometry.coordinates
+  return dronePositionsMap.get(sender_id).geometry.coordinates
 }
 
-export function updateLiveDroneLocation(serialNumber, position) {
-  if(!dronePositionsMap.has(serialNumber)) {
-    dronePositionsMap.set(serialNumber, {
+export function updateLiveDroneLocation(sender_id, position) {
+  if(!dronePositionsMap.has(sender_id)) {
+    dronePositionsMap.set(sender_id, {
       type: 'Feature',
-      properties: {serialNumber},
+      properties: {serialNumber: sender_id},
       geometry: { type: 'Point', coordinates: position },
     })
   }
 
-  if(!dronePathsMap.has(serialNumber)) {
-    dronePathsMap.set(serialNumber, {
+  if(!dronePathsMap.has(sender_id)) {
+    dronePathsMap.set(sender_id, {
       type: 'Feature',
       properties: {},
       geometry: { type: 'LineString', coordinates: [] },
     })
   }
     
-  dronePositionsMap.get(serialNumber).geometry.coordinates = position
-  dronePathsMap.get(serialNumber).geometry.coordinates.push([position[0], position[1]])
+  dronePositionsMap.get(sender_id).geometry.coordinates = position
+  dronePathsMap.get(sender_id).geometry.coordinates.push([position[0], position[1]])
 }
 
 
@@ -42,7 +42,7 @@ export class LiveVisualizationStrategy {
     return {
       type: 'FeatureCollection',
       features: this.activeDrones.value
-        .map(drone => dronePositionsMap.get(drone.serial_number))
+        .map(drone => dronePositionsMap.get(drone.sender_id))
         .filter(feature => feature && feature.geometry.coordinates !== undefined)
     }
   }
@@ -82,7 +82,7 @@ export class LiveVisualizationStrategy {
       type: 'FeatureCollection',
       features: this.activeDrones.value
         .filter(drone => drone.show_path)
-        .map(drone => dronePathsMap.get(drone.serial_number)),
+        .map(drone => dronePathsMap.get(drone.sender_id)),
     }
   }
 }
