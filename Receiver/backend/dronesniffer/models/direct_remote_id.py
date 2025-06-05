@@ -2,21 +2,58 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime, timezone
 
+# Base for SQLAlchemy declarative mappings
 Base = declarative_base()
+
+# ---------------------------------------------------------------------------
+# Abstract base class for all Remote ID message models                     
+# ---------------------------------------------------------------------------
+#
+# Many of the message types share the same bookkeeping columns (primary key,
+# protocol version, sender identifier and reception timestamp).  We keep them
+# in one place so they only need to be maintained once and every model gets
+# the identical definition.
+# ---------------------------------------------------------------------------
+
+
+class RemoteIdMessageBase(Base):
+    """Abstract base that bundles columns common to all Remote ID messages."""
+
+    __abstract__ = True  # SQLAlchemy should NOT create its own table for this
+
+    # Primary key for every message table
+    id = Column(Integer, primary_key=True)
+
+    # All messages carry a protocol version (currently 0x0-0xF)
+    version = Column(Integer, nullable=False, default=0x0)
+
+    # MAC address (Wi-Fi) or other identifier of the transmitter
+    sender_id = Column(String(255), nullable=False, index=True)
+
+    # Timestamp when this message was received by the sniffer backend
+    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
+
+    # Every message has a numeric type.  Sub-classes set the proper constant in
+    # their constructor so we declare the column once here.
+    message_type = Column(Integer, nullable=False)
 
 ### 
 # ADS-STAN Messages
 ###
 
-class BasicIdMessage(Base):
+# ---------------------------------------------------------------------------
+# ADS-STAN Basic ID Message (type 0x0)
+# ---------------------------------------------------------------------------
+
+class BasicIdMessage(RemoteIdMessageBase):
     """Basic ID Message (type 0x0)"""
     __tablename__ = 'basic_id_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x0)
-    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        # Ensure callers cannot override the fixed message type accidentally.
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0x0
 
     id_type = Column(Integer, nullable=True)
     ua_type = Column(Integer, nullable=True)
@@ -25,15 +62,18 @@ class BasicIdMessage(Base):
     def __repr__(self):
         return f"<BasicIdMessage(sender_id={self.sender_id}, uas_id={self.uas_id})>"
 
-class LocationMessage(Base):
+# ---------------------------------------------------------------------------
+# ADS-STAN Location/Vector Message (type 0x1)
+# ---------------------------------------------------------------------------
+
+class LocationMessage(RemoteIdMessageBase):
     """Location Vector Message (type 0x1)"""
     __tablename__ = 'location_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x1)
-    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0x1
 
     operational_status = Column(Integer, nullable=True)
     is_reserved = Column(Boolean, nullable=True)
@@ -55,15 +95,18 @@ class LocationMessage(Base):
     def __repr__(self):
         return f"<LocationMessage(sender_id={self.sender_id}, lat={self.latitude}, lon={self.longitude})>"
 
-class SelfIdMessage(Base):
+# ---------------------------------------------------------------------------
+# ADS-STAN Self ID Message (type 0x3)
+# ---------------------------------------------------------------------------
+
+class SelfIdMessage(RemoteIdMessageBase):
     """Self ID Message (type 0x3)"""
     __tablename__ = 'self_id_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x3)
-    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0x3
 
     description_type = Column(Integer, nullable=True)
     description = Column(String(255), nullable=True)
@@ -71,15 +114,18 @@ class SelfIdMessage(Base):
     def __repr__(self):
         return f"<SelfIdMessage(sender_id={self.sender_id}, description={self.description})>"
 
-class SystemMessage(Base):
+# ---------------------------------------------------------------------------
+# ADS-STAN System Message (type 0x4)
+# ---------------------------------------------------------------------------
+
+class SystemMessage(RemoteIdMessageBase):
     """System Message (type 0x4)"""
     __tablename__ = 'system_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x4)
-    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0x4
 
     classification_type = Column(Integer, nullable=True)
     location_source = Column(Integer, nullable=True)
@@ -96,15 +142,18 @@ class SystemMessage(Base):
     def __repr__(self):
         return f"<SystemMessage(sender_id={self.sender_id}, ua_category={self.ua_category}, ua_class={self.ua_class})>"
 
-class OperatorMessage(Base):
+# ---------------------------------------------------------------------------
+# ADS-STAN Operator ID Message (type 0x5)
+# ---------------------------------------------------------------------------
+
+class OperatorMessage(RemoteIdMessageBase):
     """Operator ID Message (type 0x5)"""
     __tablename__ = 'operator_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x5)
-    version = Column(Integer, nullable=False, default=0x0)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0x5
 
     operator_id_type = Column(Integer, nullable=True)
     operator_id = Column(String(255), nullable=True)
@@ -115,15 +164,19 @@ class OperatorMessage(Base):
 ###
 # DJI Messages
 ###
-class DjiMessage(Base):
+
+# ---------------------------------------------------------------------------
+# DJI proprietary Remote ID Message (mapped to type 0x6 for our purposes)
+# ---------------------------------------------------------------------------
+
+class DjiMessage(RemoteIdMessageBase):
     """DJI Message """
     __tablename__ = 'dji_messages'
 
-    id = Column(Integer, primary_key=True)
-    message_type = Column(Integer, nullable=False, default=0x6)
-    version = Column(Integer, nullable=False)  # 0x0-0xF
-    sender_id = Column(String(255), nullable=False, index=True)  # Who sent the message (MAC-Address for wifi)
-    received_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))  # When we received the message
+    def __init__(self, **kwargs):
+        kwargs.pop("message_type", None)
+        super().__init__(**kwargs)
+        self.message_type = 0xA
 
     serial_number = Column(String(255), nullable=True)
     dji_longitude = Column(Float, nullable=True)

@@ -1,55 +1,22 @@
-FROM node:20-alpine AS frontend-build
+FROM python:3.13-bookworm
 
 WORKDIR /app
 
-# Define build arguments with defaults
-ARG FRONTEND_BUILD_COMMAND=build:google
-ARG STYLE_URL
-
-# Copy frontend files
-COPY frontend/package*.json ./frontend/
-WORKDIR /app/frontend
-RUN npm ci
-
-COPY frontend/ ./
-
-# Use the build command from arguments
-RUN if [ -z "$STYLE_URL" ]; then \
-        npm run ${FRONTEND_BUILD_COMMAND}; \
-    else \
-        npm run build --style-url=${STYLE_URL}; \
-    fi
-
-# Backend stage
-FROM python:3.11-slim
-
-WORKDIR /app
-
-# Install system dependencies (libpcap for packet capturing)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    iproute2 \
-    libatlas-base-dev \
-    tcpdump \
-    wireless-tools \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy backend requirements and install
+# Copy backend requirements and install Python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the backend code
+# Copy the application code
 COPY backend/ ./backend/
-COPY resources/ ./resources/
 
-# Copy the built frontend from the build stage
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist/
+# Copy the built frontend
+COPY ./frontend/dist ./frontend/dist/
+
+COPY pytest.ini pytest.ini
+COPY .coveragerc .coveragerc
 
 # Set environment variables
 ENV PYTHONPATH=/app
 
-# Expose the port the app runs on
-EXPOSE 80
-
 # Command to run the application
-CMD ["python", "backend/dronesniffer/main.py"] 
+CMD ["python", "backend/dronesniffer/main.py"]

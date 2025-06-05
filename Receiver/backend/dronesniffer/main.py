@@ -10,7 +10,7 @@ from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
 from packet_processor import process_packet
-from parsing_queue import ParsingQueue
+from parsing_queue import LimitedThreadPoolExecutor
 
 ####
 # Setup logging
@@ -91,11 +91,17 @@ def main():
     # Parsing Queue.
     # Whenever a packet is received, it will be submitted to the queue
     # and processed by the worker threads.
-    parsing_queue = ParsingQueue(process_packet_function=process_packet, num_workers=1000, max_queue_size=0)
+    parsing_queue = LimitedThreadPoolExecutor(max_queue_size=0, max_workers=1000)
     
     # setup sniff manager
     # whenever a message is sniffed, it will be passed to the parsing queue
-    sniff_manager = SniffManager(on_packet_received=parsing_queue.submit)
+    def process_packet_wrapper(packet):
+        try:
+            parsing_queue.submit(process_packet, packet)
+        except Exception as e:
+            LOG.error(f"Error processing packet: {e}")
+
+    sniff_manager = SniffManager(on_packet_received=process_packet_wrapper)
 
 
     # setup signal handlers for graceful shutdown
@@ -106,8 +112,7 @@ def main():
         if file or lte:
             LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
-            parsing_queue.start()
-
+        
         
         # Start sniffing on the interfaces 
         settings = get_settings()

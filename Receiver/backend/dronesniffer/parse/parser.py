@@ -3,10 +3,17 @@ from scapy.packet import Packet
 import struct
 from scapy.packet import Packet
 from exceptions import ParseRemoteIdError
-from .ads_stan.messages.direct_remote_id import DirectRemoteIdMessage
 from typing import Optional, List
+from abc import ABC
 
+class ParsedMessage(ABC):
+    """Represents a parsed Remote ID message from any supported protocol."""
+    provider: str
 
+    def __init__(self, provider: str):
+        self.provider = provider
+
+        
 class Parser:
 
     """
@@ -59,7 +66,7 @@ class Parser:
         return f"{oui_raw[0:2]}:{oui_raw[2:4]}:{oui_raw[4:]}".upper()
 
     @staticmethod
-    def from_wifi(packet: Packet, oui: str) -> Optional[DirectRemoteIdMessage]:
+    def from_wifi(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         Parse a vendor specific element of a Wi-Fi packet.
 

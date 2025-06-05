@@ -1,19 +1,5 @@
 # Use Node.js LTS as base image
-FROM node:20-bookworm
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    ruby \
-    ruby-dev \
-    build-essential \
-    default-jre \
-    graphviz \
-    plantuml \
-    wget \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Ruby gems
-RUN gem install asciidoctor asciidoctor-diagram asciidoctor-plantuml
+FROM node:24-alpine
 
 # Set working directory
 WORKDIR /app

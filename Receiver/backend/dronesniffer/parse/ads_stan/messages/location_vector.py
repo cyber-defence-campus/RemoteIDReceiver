@@ -3,9 +3,6 @@ from .direct_remote_id import DirectRemoteIdMessage
 @dataclass
 class LocationVectorMessage(DirectRemoteIdMessage):
   
-  message_type: int = field(init=False, default=0x1)
-  version: int = field(init=False, default=0x0)
-
   # Operational status
   ## 0: Undeclared
   ## 1: Ground
@@ -71,3 +68,7 @@ class LocationVectorMessage(DirectRemoteIdMessage):
   accuracy_speed: int
   accuracy_barometric_altitude: int
   accuracy_timestamp: int
+  
+  def __post_init__(self):
+    """Initialize the parent class after dataclass initialization."""
+    super().__init__(message_type=0x1, version=0x0)

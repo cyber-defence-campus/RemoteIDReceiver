@@ -29,14 +29,14 @@ class RemoteIdMapper:
             A list of the appropriate database model instances or None if conversion fails
         """
         db_models = []
-        if parsed_message.is_dji:
+        if parsed_message.provider == "DJI":
             db_models.append(RemoteIdMapper._map_dji_message(parsed_message, sender_id))
-        elif parsed_message.is_ads_stan and parsed_message.message.message_type == 0xF: # ADS-STAN message groups, grouped in a single message
-            for message in parsed_message.message.messages:
-                db_model = RemoteIdMapper._map_ads_stan_message(ParsedMessage(provider="ADS-STAN", message=message), sender_id)
+        elif parsed_message.provider == "ADS-STAN" and parsed_message.message_type == 0xF: # ADS-STAN message groups, grouped in a single message
+            for message in parsed_message.messages:
+                db_model = RemoteIdMapper._map_ads_stan_message(message, sender_id)
                 if db_model:
                     db_models.append(db_model)
-        elif parsed_message.is_ads_stan: # Individual ADS-STAN messages, not grouped
+        elif parsed_message.provider == "ADS-STAN": # Individual ADS-STAN messages, not grouped
             db_model = RemoteIdMapper._map_ads_stan_message(parsed_message, sender_id)
             if db_model:
                 db_models.append(db_model)
@@ -56,101 +56,99 @@ class RemoteIdMapper:
         Returns:
             The appropriate database model instance or None if conversion fails
         """
-        if parsed_message.is_dji:
+        if parsed_message.provider == "DJI":
             return RemoteIdMapper._map_dji_message(parsed_message, sender_id)
-        elif parsed_message.is_ads_stan:
+        elif parsed_message.provider == "ADS-STAN":
             return RemoteIdMapper._map_ads_stan_message(parsed_message, sender_id)
         else:
-            LOG.warning(f"Failed to map message: {parsed_message.message}")
+            LOG.warning(f"Failed to map message: {parsed_message}")
         return None
 
     @staticmethod
     def _map_dji_message(parsed_message: ParsedMessage, sender_id: str) -> DjiMessage:
         """Map a DJI ParsedMessage to a DjiMessage database model."""
-        message = parsed_message.message
         return DjiMessage(
             message_type=0xA,  
-            version=message.version if hasattr(message, 'version') else 0x0,
+            version=parsed_message.version if hasattr(parsed_message, 'version') else 0x0,
             sender_id=sender_id,
             received_at=datetime.now(timezone.utc),
-            serial_number=message.serial_number,
-            dji_longitude=message.lng,
-            dji_latitude=message.lat,
-            dji_height=message.height,
-            dji_x_speed=message.x_speed,
-            dji_y_speed=message.y_speed,
-            dji_yaw=message.yaw,
-            dji_pilot_latitude=message.pilot_lat,
-            dji_pilot_longitude=message.pilot_lng
+            serial_number=parsed_message.serial_number,
+            dji_longitude=parsed_message.lng,
+            dji_latitude=parsed_message.lat,
+            dji_height=parsed_message.height,
+            dji_x_speed=parsed_message.x_speed,
+            dji_y_speed=parsed_message.y_speed,
+            dji_yaw=parsed_message.yaw,
+            dji_pilot_latitude=parsed_message.pilot_lat,
+            dji_pilot_longitude=parsed_message.pilot_lng
         )
 
     @staticmethod
     def _map_ads_stan_message(parsed_message: ParsedMessage, sender_id: str) -> Optional[BasicIdMessage | LocationMessage | SelfIdMessage | SystemMessage | OperatorMessage]:
         """Map an ADS-STAN ParsedMessage to the appropriate database model."""
-        message = parsed_message.message
         
         # Common fields for all message types
         base_fields = {
-            'version': message.version,
+            'version': parsed_message.version,
             'sender_id': sender_id,
             'received_at': datetime.now(timezone.utc),
-            'message_type': message.message_type
+            'message_type': parsed_message.message_type
         }
         
         # Map based on message type
-        if message.message_type == 0x0:  # Basic ID
+        if parsed_message.message_type == 0x0:  # Basic ID
             return BasicIdMessage(
                 **base_fields,
-                id_type=message.id_type,
-                ua_type=message.ua_type,
-                uas_id=message.uas_id
+                id_type=parsed_message.id_type,
+                ua_type=parsed_message.ua_type,
+                uas_id=parsed_message.uas_id
             )
-        elif message.message_type == 0x1:  # Location
+        elif parsed_message.message_type == 0x1:  # Location
             return LocationMessage(
                 **base_fields,
-                operational_status=message.operational_status,
-                is_reserved=message.is_reserved,
-                height_type=message.height_type,
-                track_direction=message.track_direction,
-                speed=message.speed,
-                vertical_speed=message.vertical_speed,
-                latitude=message.latitude,
-                longitude=message.longitude,
-                altitude_barometric=message.altitude_barometric,
-                altitude_geodetic=message.altitude_geodetic,
-                height_above_takeoff=message.height_above_takeoff,
-                accuracy_horizontal=message.accuracy_horizontal,
-                accuracy_vertical=message.accuracy_vertical,
-                accuracy_speed=message.accuracy_speed,
-                accuracy_barometric_altitude=message.accuracy_barometric_altitude,
-                accuracy_timestamp=message.accuracy_timestamp
+                operational_status=parsed_message.operational_status,
+                is_reserved=parsed_message.is_reserved,
+                height_type=parsed_message.height_type,
+                track_direction=parsed_message.track_direction,
+                speed=parsed_message.speed,
+                vertical_speed=parsed_message.vertical_speed,
+                latitude=parsed_message.latitude,
+                longitude=parsed_message.longitude,
+                altitude_barometric=parsed_message.altitude_barometric,
+                altitude_geodetic=parsed_message.altitude_geodetic,
+                height_above_takeoff=parsed_message.height_above_takeoff,
+                accuracy_horizontal=parsed_message.accuracy_horizontal,
+                accuracy_vertical=parsed_message.accuracy_vertical,
+                accuracy_speed=parsed_message.accuracy_speed,
+                accuracy_barometric_altitude=parsed_message.accuracy_barometric_altitude,
+                accuracy_timestamp=parsed_message.accuracy_timestamp
             )
-        elif message.message_type == 0x3:  # Self ID
+        elif parsed_message.message_type == 0x3:  # Self ID
             return SelfIdMessage(
                 **base_fields,
-                description_type=message.description_type,
-                description=message.description
+                description_type=parsed_message.description_type,
+                description=parsed_message.description
             )
-        elif message.message_type == 0x4:  # System
+        elif parsed_message.message_type == 0x4:  # System
             return SystemMessage(
                 **base_fields,
-                classification_type=message.classification_type,
-                location_source=message.location_source,
-                pilot_latitude=message.pilot_latitude,
-                pilot_longitude=message.pilot_longitude,
-                area_count=message.area_count,
-                area_radius=message.area_radius,
-                area_ceiling=message.area_ceiling,
-                area_floor=message.area_floor,
-                ua_category=message.ua_category,
-                ua_class=message.ua_class,
-                pilot_geodetic_altitude=message.pilot_geodetic_altitude
+                classification_type=parsed_message.classification_type,
+                location_source=parsed_message.location_source,
+                pilot_latitude=parsed_message.pilot_latitude,
+                pilot_longitude=parsed_message.pilot_longitude,
+                area_count=parsed_message.area_count,
+                area_radius=parsed_message.area_radius,
+                area_ceiling=parsed_message.area_ceiling,
+                area_floor=parsed_message.area_floor,
+                ua_category=parsed_message.ua_category,
+                ua_class=parsed_message.ua_class,
+                pilot_geodetic_altitude=parsed_message.pilot_geodetic_altitude
             )
-        elif message.message_type == 0x5:  # Operator ID
+        elif parsed_message.message_type == 0x5:  # Operator ID
             return OperatorMessage(
                 **base_fields,
-                operator_id_type=message.operator_id_type,
-                operator_id=message.operator_id
+                operator_id_type=parsed_message.operator_id_type,
+                operator_id=parsed_message.operator_id
             )
         return None
 

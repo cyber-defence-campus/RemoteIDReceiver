@@ -2,13 +2,15 @@ from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 from datetime import datetime, timedelta, timezone
 from .drone_service import DroneService
-
+from spoofing_detection import is_spoofed
 from models.direct_remote_id import (
     BasicIdMessage, 
     LocationMessage, 
     SystemMessage, 
+    OperatorMessage,
+    SelfIdMessage
 )
-from models.dtomodels import DroneDto, Position, MinimalDroneDto
+from models.dtomodels import DroneDto, Position, MinimalDroneDto, FlightPathPointDto
 import logging
 
 class DroneServiceAds(DroneService):
@@ -66,11 +68,17 @@ class DroneServiceAds(DroneService):
             location = session.query(LocationMessage).filter(LocationMessage.sender_id == sender_id).order_by(LocationMessage.received_at.desc()).first()
             system = session.query(SystemMessage).filter(SystemMessage.sender_id == sender_id).order_by(SystemMessage.received_at.desc()).first()
             first_location = session.query(LocationMessage).filter(LocationMessage.sender_id == sender_id).order_by(LocationMessage.received_at.asc()).first()
+            operator = session.query(OperatorMessage).filter(OperatorMessage.sender_id == sender_id).order_by(OperatorMessage.received_at.desc()).first()
+            selfid = session.query(SelfIdMessage).filter(SelfIdMessage.sender_id == sender_id).order_by(SelfIdMessage.received_at.desc()).first()
+            
+        pilot_position = Position(lat=system.pilot_latitude, lng=system.pilot_longitude) if system else None
+        drone_position = Position(lat=location.latitude, lng=location.longitude) if location else None
 
         return DroneDto(
-            serial_number=basic_id.sender_id,
-            position=Position(lat=location.latitude, lng=location.longitude) if location else None,
-            pilot_position=Position(lat=system.pilot_latitude, lng=system.pilot_longitude) if location else None,
+            sender_id=location.sender_id,
+            serial_number=basic_id.uas_id,
+            position=drone_position,
+            pilot_position=pilot_position,
             home_position=Position(lat=first_location.latitude, lng=first_location.longitude) if first_location else None,
             rotation=None,
             altitude=location.height_above_takeoff if location else None,
@@ -78,7 +86,10 @@ class DroneServiceAds(DroneService):
             x_speed=location.speed if location else None,
             y_speed=location.vertical_speed if location else None,
             z_speed=None,
-            spoofed=None
+            spoofed=is_spoofed(drone_position, pilot_position) if drone_position and pilot_position else None,
+            flight_purpose=selfid.description if selfid else None,
+            operator_id=operator.operator_id if operator else None,
+            ua_type=basic_id.ua_type if basic_id else None
         )
     
     def get_drone_flight_start_times(self, sender_id: str, activity_offset: timedelta) -> List[datetime]:
@@ -97,7 +108,7 @@ class DroneServiceAds(DroneService):
 
             return flight_start_times
     
-    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[Dict[str, Any]]:
+    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[FlightPathPointDto]:
         with Session(self.db_engine) as session:
             query = session.query(LocationMessage) \
                 .filter(LocationMessage.sender_id == sender_id) \
@@ -114,14 +125,11 @@ class DroneServiceAds(DroneService):
                 if drone.received_at > latest_timestamp + activity_offset:
                     break
             
-                path.append({
-                    "timestamp": drone.received_at,
-                    "position": {
-                        "latitude": drone.latitude,
-                        "longitude": drone.longitude,
-                        "altitude": drone.height_above_takeoff
-                    }
-                })
+                path.append(FlightPathPointDto(
+                    timestamp=drone.received_at,
+                    position=Position(lat=drone.latitude, lng=drone.longitude),
+                    altitude=drone.height_above_takeoff
+                ))
 
             return path
 

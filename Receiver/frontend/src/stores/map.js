@@ -6,8 +6,9 @@ import { ReplayVisualizationStrategy } from './visualization/ReplayVisualization
 
 
 class ActiveDrone {
-  constructor(serial_number, home_position, pilot_position) {
+  constructor(sender_id, serial_number, home_position, pilot_position) {
     this.serial_number = serial_number
+    this.sender_id = sender_id
     this.show_path = false
     this.show_pilot = false
     this.show_home = false
@@ -19,7 +20,7 @@ class ActiveDrone {
 
 export const useMapStore = defineStore('map', () => {
   // State
-  const activeDrones = ref([]) // Map of Drones keyed by serial_number
+  const activeDrones = ref([]) // Map of Drones keyed by sender_id
   const focusedDrone = ref(null) // The drone that is centered on the map
   const infoDrone = ref(null) // The drone that is getting displayed in the Drone Info panel
 
@@ -40,21 +41,19 @@ export const useMapStore = defineStore('map', () => {
     const drones = await getActiveDrones()
     drones.forEach(drone => {
       updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
-
-      console.log(drone)
     })
 
-    activeDrones.value = drones.map(drone => new ActiveDrone(drone.sender_id))
+    activeDrones.value = drones.map(drone => new ActiveDrone(drone.sender_id, drone.serial_number))
   }
 
-  async function setInfoDrone(serialNumber) {
-    const drone_dto = await getDrone(serialNumber)
+  async function setInfoDrone(sender_id) {
+    const drone_dto = await getDrone(sender_id)
     infoDrone.value = drone_dto
   }
 
   // Drone updates
-  function updateDroneLocation(serialNumber, position) {
-    updateLiveDroneLocation(serialNumber, position)
+  function updateDroneLocation(sender_id, position) {
+    updateLiveDroneLocation(sender_id, position)
   }
 
   // Replay functionality
@@ -78,7 +77,7 @@ export const useMapStore = defineStore('map', () => {
     if (replayModeIsActive.value) {
       return replayStrategy.getDroneFeatures().features[0].geometry.coordinates
     } else {
-      return getDroneLocation(focusedDrone.value.serial_number)
+      return getDroneLocation(focusedDrone.value.sender_id)
     }
   }
 
@@ -88,7 +87,7 @@ export const useMapStore = defineStore('map', () => {
     if (replayModeIsActive.value) { 
       return replayStrategy.getDroneFeatures().features[0].geometry.coordinates
     } else {
-      return getDroneLocation(infoDrone.value.serial_number)
+      return getDroneLocation(infoDrone.value.sender_id)
     }
   }
 

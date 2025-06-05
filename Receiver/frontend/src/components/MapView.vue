@@ -200,10 +200,10 @@ const initializeMap = async () => {
   map.value.on('click', 'drones', (e) => {
     if (e.features.length > 0) {
       const feature = e.features[0]
-      const serialNumber = feature.properties.serialNumber
+      const sender_id = feature.properties.sender_id
 
-      mapStore.setInfoDrone(serialNumber)
-      const drone = activeDrones.value.find(drone => drone.serial_number === serialNumber)
+      mapStore.setInfoDrone(sender_id)
+      const drone = activeDrones.value.find(drone => drone.sender_id === sender_id)
 
       const allShown = drone.show_home && drone.show_path && drone.show_pilot
 

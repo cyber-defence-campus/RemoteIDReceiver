@@ -23,15 +23,14 @@ if (import.meta.env.DEV && !isInitialized) {
   client = initializeMocks()
   initializeMockWebServer()
   isInitialized = true
-  // axios.defaults.baseURL = 'http://localhost:3001';
 }
 
 async function getJsonResponse(url) {
   return (await client.get(url)).data
 }
 
-export const getDrone = async (serial_number) => {
-  const drone = await getJsonResponse(`/api/drones/${serial_number}`)
+export const getDrone = async (sender_id) => {
+  const drone = await getJsonResponse(`/api/drones/${sender_id}`)
   return new Drone(drone)
 }
 
@@ -55,11 +54,17 @@ export const postSettings = async (settings) => {
 }
 
 export const initWebSocket = () => {
+  if(import.meta.env.DEV) return; // WebSocket is not required in mock mode
+
   const store = useMapStore();
 
-  const ws = new WebSocket(`ws://${window.location.host}/ws`);
+  let wsl = "ws://" + window.location.host + "/ws"
+
+  const ws = new WebSocket(wsl);
   ws.onmessage = (event) => {
-    const drone = JSON.parse(event.data);
-    store.updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
+    const drones = JSON.parse(event.data);
+    for (const drone of drones) {
+      store.updateDroneLocation(drone.sender_id, [drone.position.lng, drone.position.lat])
+    }
   };
 }

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from sqlalchemy.orm import Session
 from info_handler import engine
 from models.direct_remote_id import BasicIdMessage, LocationMessage, SelfIdMessage, SystemMessage, OperatorMessage
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 router = APIRouter()
@@ -12,26 +12,21 @@ class BasicIdMessageDto(BaseModel):
     sender_id: str
     uas_id: str | None
     received_at: datetime
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class LocationMessageDto(BaseModel):
     sender_id: str
     latitude: float | None
     longitude: float | None
     received_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SelfIdMessageDto(BaseModel):
     sender_id: str
     description: str | None
     received_at: datetime
     description_type: int | None
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SystemMessageDto(BaseModel):
     sender_id: str
@@ -47,18 +42,14 @@ class SystemMessageDto(BaseModel):
     area_ceiling: int | None
     area_floor: int | None
     pilot_geodetic_altitude: int | None
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class OperatorMessageDto(BaseModel):
     sender_id: str
     operator_id: str | None
     received_at: datetime
     operator_id_type: int | None
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 @router.get("/api/ads_stan/basic_id", response_model=list[BasicIdMessageDto], description="Retrieve all Basic ID messages, optionally filtered by sender_id.")
 def get_basic_id_messages(sender_id: str = None) -> list[BasicIdMessageDto]:

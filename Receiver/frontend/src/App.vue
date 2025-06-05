@@ -10,6 +10,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { createGoogleStyle } from 'maplibre-google-maps'
 import { storeToRefs } from 'pinia'
 import { useSettingsStore } from './stores/settings'
+import { initWebSocket } from './api/api'
 
 const settingsStore = useSettingsStore()
 const { googleApiKey } = storeToRefs(settingsStore)
@@ -23,6 +24,8 @@ const MAP_STYLES = {
 const styleUrl = ref(null)
 
 onMounted(() => {
+  initWebSocket();
+
   const customStyleUrl = import.meta.env.VITE_MAP_STYLE_URL
 
   // If a style url is provided, use it

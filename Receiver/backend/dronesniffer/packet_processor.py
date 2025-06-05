@@ -21,6 +21,8 @@ LOG = logging.getLogger(__name__)
 # this is especially important because the target hardware is a raspberry pi with an sd-card as storage.
 time_buffer = TimeBuffer(interval_seconds=1, on_flush=save_messages)
 
+time_buffer_ws = TimeBuffer(interval_seconds=.1, on_flush=broadcast)
+
 def process_packet(packet: Packet) -> None:
     """
     Method to filter Wi-Fi frames. Only frames containing a vendor specific element will not be filtered out
@@ -33,11 +35,9 @@ def process_packet(packet: Packet) -> None:
     """
     vendor_spec: Dot11EltVendorSpecific = _get_vendor_specific(packet)
     while vendor_spec:
-
         # Check if the packet was sent by a drone
         layer_oui = Parser.dec2hex(vendor_spec.oui)
         if parser.is_supported_protocol(layer_oui):
-            
             # Parse the drone packet
             parsed_message = parser.from_wifi(vendor_spec.info, layer_oui)
             if parsed_message:
@@ -47,7 +47,7 @@ def process_packet(packet: Packet) -> None:
                 mac_from = packet.addr2
                 db_models = mapper.to_db_models(parsed_message, mac_from)
                 LOG.debug(f"DB models: {db_models}")
-                
+
                 # Save the message to the database
                 _save_db_models(db_models)
 
@@ -55,7 +55,9 @@ def process_packet(packet: Packet) -> None:
                 _broadcast_location(db_models)
             break
         else:
-            vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(Dot11EltVendorSpecific)
+            vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(
+                Dot11EltVendorSpecific
+            )
 
 
 def _get_vendor_specific(packet: Packet) -> Dot11EltVendorSpecific:
@@ -73,6 +75,7 @@ def _get_vendor_specific(packet: Packet) -> Dot11EltVendorSpecific:
     else:
         return None
 
+
 def _save_db_models(db_models: List[BaseModel]) -> None:
     """
     Save the message to the database
@@ -80,12 +83,23 @@ def _save_db_models(db_models: List[BaseModel]) -> None:
     for model in db_models:
         time_buffer.add(model)
 
+
 def _broadcast_location(db_models: List[BaseModel]) -> None:
     """
     Broadcast the message to the websocket
     """
     for model in db_models:
         if type(model) == DjiMessage:
-            broadcast(MinimalDroneDto(sender_id=model.sender_id, position=Position(lat=model.dji_latitude, lng=model.dji_longitude)))
+            time_buffer_ws.add(
+                MinimalDroneDto(
+                    sender_id=model.sender_id,
+                    position=Position(lat=model.dji_latitude, lng=model.dji_longitude),
+                )
+            )
         elif type(model) == LocationMessage:
-            broadcast(MinimalDroneDto(sender_id=model.sender_id, position=Position(lat=model.latitude, lng=model.longitude)))
+            time_buffer_ws.add(
+                MinimalDroneDto(
+                    sender_id=model.sender_id,
+                    position=Position(lat=model.latitude, lng=model.longitude),
+                )
+            )

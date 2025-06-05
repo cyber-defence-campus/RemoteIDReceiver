@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime, timedelta
 from services.drone_service_ads import DroneServiceAds
 from models.direct_remote_id import BasicIdMessage, LocationMessage, SystemMessage, Base
-from models.dtomodels import DroneDto, Position
+from models.dtomodels import DroneDto, Position, FlightPathPointDto
 from sqlmodel import create_engine, SQLModel 
 
 class TestDroneServiceAds(unittest.TestCase):
@@ -52,14 +52,15 @@ class TestDroneServiceAds(unittest.TestCase):
 
     def test_get_drone_state(self):
         # Add test data to the session
-        self._session.add(BasicIdMessage(sender_id="drone1"))
+        self._session.add(BasicIdMessage(sender_id="drone1", uas_id="drone1-serial"))
         self._session.add(LocationMessage(sender_id="drone1", latitude=10.0, longitude=20.0, height_above_takeoff=100, speed=5, vertical_speed=1))
         self._session.add(SystemMessage(sender_id="drone1", pilot_latitude=15.0, pilot_longitude=25.0))
         self._session.commit()
 
         result = self.service.get_drone_state("drone1")
         expected = DroneDto(
-            serial_number="drone1",
+            sender_id="drone1",
+            serial_number="drone1-serial",
             position=Position(lat=10.0, lng=20.0),
             pilot_position=Position(lat=15.0, lng=25.0),
             home_position=Position(lat=10.0, lng=20.0),
@@ -69,7 +70,7 @@ class TestDroneServiceAds(unittest.TestCase):
             x_speed=5,
             y_speed=1,
             z_speed=None,
-            spoofed=None
+            spoofed=True
         )
         self.assertEqual(result, expected)
 
@@ -108,9 +109,21 @@ class TestDroneServiceAds(unittest.TestCase):
         result = self.service.get_flight_history("drone1", datetime(2023, 1, 1, 12, 0, 0), timedelta(minutes=3))
         
         expected = [
-            {"timestamp": datetime(2023, 1, 1, 12, 0, 0), "position": {"latitude": 10.0, "longitude": 20.0, "altitude": 100}},
-            {"timestamp": datetime(2023, 1, 1, 12, 1, 0), "position": {"latitude": 10.1, "longitude": 20.1, "altitude": 101}},
-            {"timestamp": datetime(2023, 1, 1, 12, 2, 0), "position": {"latitude": 10.2, "longitude": 20.2, "altitude": 102}}
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 0, 0),
+                position=Position(lat=10.0, lng=20.0),
+                altitude=100
+            ),
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 1, 0),
+                position=Position(lat=10.1, lng=20.1),
+                altitude=101
+            ),
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 2, 0),
+                position=Position(lat=10.2, lng=20.2),
+                altitude=102
+            )
         ]
         self.assertEqual(result, expected)
 
@@ -124,7 +137,11 @@ class TestDroneServiceAds(unittest.TestCase):
         result = self.service.get_flight_history("drone4", datetime(2023, 1, 1, 12, 0, 0), timedelta(seconds=1))
         
         expected = [
-            {"timestamp": datetime(2023, 1, 1, 12, 0, 0), "position": {"latitude": 10.0, "longitude": 20.0, "altitude": 100}},
+            FlightPathPointDto(
+                timestamp=datetime(2023, 1, 1, 12, 0, 0),
+                position=Position(lat=10.0, lng=20.0),
+                altitude=100
+            )
         ]
         self.assertEqual(result, expected)
 

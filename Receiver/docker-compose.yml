@@ -1,44 +1,68 @@
-version: '3.8'
 
 services:
-  google-maps:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - FRONTEND_BUILD_COMMAND=build:google
-    ports:
-      - "80:80"
-    environment:
-      - PYTHONPATH=/app
-    volumes:
-      - ./resources:/app/resources
-    command: python backend/dronesniffer/main.py 
 
-  custom:
+
+  #### DEV FRONTEND ####
+  # This service is used for development purposes only.
+  # It runs the Vue.js development server and mounts the local files for live reloading.
+  # It should not be used in production.
+  # Drones are received from a mock endpoint and not from the backend.
+  ######################
+  dev-frontend:
     build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - STYLE_URL=${STYLE_URL:-}
+      context: ./frontend/
+      dockerfile: Dockerfile.dev
     ports:
-      - "80:80"
+      - '3000:3000' # Vue dev server
+    volumes:
+      - ./frontend/:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_MAP_STYLE=${FRONTEND_MAP_STYLE:-}
+      - VITE_MAP_STYLE_URL=${FRONTEND_MAP_SOURCE:-}
+      - VITE_GOOGLE_API_KEY=${FRONTEND_MAP_API_KEY:-}
+    command: npm run dev
+
+
+  #### BUILD FRONTEND ####
+  # This service is used to build the frontend for production.
+  # It builds the frontend to the ./frontend/dist folder.
+  ####################### 
+  build-frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend/:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=production
+      - VITE_MAP_STYLE=${FRONTEND_MAP_STYLE:-}
+      - VITE_MAP_STYLE_URL=${FRONTEND_MAP_SOURCE:-}
+      - VITE_GOOGLE_API_KEY=${FRONTEND_MAP_API_KEY:-}
+    command: npm run build 
+
+
+  #### BACKEND ####
+  # This service is used to run the backend for production.
+  #################
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
     environment:
       - PYTHONPATH=/app
-    volumes:
-      - ./resources:/app/resources
-    command: python backend/dronesniffer/main.py 
-  
-  demo-drone:
+    command: python backend/dronesniffer/main.py -p 8080
+    privileged: true
+    cap_add:
+      - NET_ADMIN
+    network_mode: "host"
+
+  test:
     build:
-      context: .
+      context: ./
       dockerfile: Dockerfile
-      args:
-        - FRONTEND_BUILD_COMMAND=build:google
-    ports:
-      - "80:80"
-    environment:
-      - PYTHONPATH=/app
+    command: pytest --cov --cov-report html:cov_html
     volumes:
-      - ./resources:/app/resources
-    command: python backend/dronesniffer/main.py --file=./resources/wifi/parrot_anafi4_real.pcapng
+      - ./cov_html:/app/cov_html
