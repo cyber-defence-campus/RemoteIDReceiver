@@ -2,7 +2,7 @@
 
 This repository introduces an extended **Remote ID Monitoring Platform** developed as part of a bachelor thesis at the **Lucerne University of Applied Sciences and Arts**, in collaboration with the **Cyber Defence Campus**. The system enables offline-capable, real-time and replayable monitoring of civilian drone broadcasts as required under the **ASD-STAN prEN 4709-002** standard.
 
-The project builds on and significantly enhances the original [Remote ID Receiver](https://github.com/cyber-defence-campus/RemoteIDReceiver), adding full ASD-Stan support, multithreaded performance, and a user-friendly offline mapping frontend.
+The project builds on the original [Remote ID Receiver](https://github.com/cyber-defence-campus/RemoteIDReceiver), adding full ASD-Stan support, multithreaded performance, and a user-friendly offline mapping frontend.
 
 ## 🧠 Project Summary
 
