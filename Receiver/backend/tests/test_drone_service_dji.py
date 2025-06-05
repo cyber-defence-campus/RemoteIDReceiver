@@ -53,7 +53,7 @@ class TestDroneServiceDji(unittest.TestCase):
     def test_get_drone_state(self):
         # Add test data to the session
         self._session.add(DjiMessage(
-            sender_id="drone1",
+            sender_id="drone1-sender",
             serial_number="drone1",
             dji_latitude=10.0,
             dji_longitude=20.0,
@@ -66,8 +66,9 @@ class TestDroneServiceDji(unittest.TestCase):
         ))
         self._session.commit()
 
-        result = self.service.get_drone_state("drone1")
+        result = self.service.get_drone_state("drone1-sender")
         expected = DroneDto(
+            sender_id="drone1-sender",
             serial_number="drone1",
             position=Position(lat=10.0, lng=20.0),
             pilot_position=Position(lat=15.0, lng=25.0),
@@ -78,7 +79,7 @@ class TestDroneServiceDji(unittest.TestCase):
             x_speed=5,
             y_speed=1,
             z_speed=None,
-            spoofed=None
+            spoofed=True
         )
         self.assertEqual(result, expected)
 

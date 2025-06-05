@@ -91,6 +91,7 @@ class TestDroneApi(unittest.TestCase):
         # Setup mock service and return value
         mock_service = MagicMock()
         mock_service.get_drone_state.return_value = DroneDto(
+            sender_id="test_drone-sender",
             serial_number="test_drone", 
             position=Position(lat=10.0, lng=20.0),
             pilot_position=Position(lat=11.0, lng=21.0),
@@ -105,14 +106,14 @@ class TestDroneApi(unittest.TestCase):
         mock_get_drone_service.return_value = mock_service
         
         # Test the API endpoint
-        response = self.client.get("/drones/test_drone")
+        response = self.client.get("/drones/test_drone-sender")
         
         # Verify response status code
         self.assertEqual(response.status_code, 200)
         
         # Verify the service was called with correct parameters
-        mock_get_drone_service.assert_called_once_with("test_drone")
-        mock_service.get_drone_state.assert_called_once_with("test_drone")
+        mock_get_drone_service.assert_called_once_with("test_drone-sender")
+        mock_service.get_drone_state.assert_called_once_with("test_drone-sender")
         
         # Verify response content
         data = response.json()

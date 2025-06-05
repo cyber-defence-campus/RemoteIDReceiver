@@ -52,14 +52,15 @@ class TestDroneServiceAds(unittest.TestCase):
 
     def test_get_drone_state(self):
         # Add test data to the session
-        self._session.add(BasicIdMessage(sender_id="drone1"))
+        self._session.add(BasicIdMessage(sender_id="drone1", uas_id="drone1-serial"))
         self._session.add(LocationMessage(sender_id="drone1", latitude=10.0, longitude=20.0, height_above_takeoff=100, speed=5, vertical_speed=1))
         self._session.add(SystemMessage(sender_id="drone1", pilot_latitude=15.0, pilot_longitude=25.0))
         self._session.commit()
 
         result = self.service.get_drone_state("drone1")
         expected = DroneDto(
-            serial_number="drone1",
+            sender_id="drone1",
+            serial_number="drone1-serial",
             position=Position(lat=10.0, lng=20.0),
             pilot_position=Position(lat=15.0, lng=25.0),
             home_position=Position(lat=10.0, lng=20.0),
@@ -69,7 +70,7 @@ class TestDroneServiceAds(unittest.TestCase):
             x_speed=5,
             y_speed=1,
             z_speed=None,
-            spoofed=None
+            spoofed=True
         )
         self.assertEqual(result, expected)
 
