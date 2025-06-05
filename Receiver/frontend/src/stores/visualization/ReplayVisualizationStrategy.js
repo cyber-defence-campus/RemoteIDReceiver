@@ -14,7 +14,7 @@ export class ReplayVisualizationStrategy {
       features: [{
         type: 'Feature',
         properties: {
-          serialNumber: drone.sender_id,
+          sender_id: drone.sender_id,
         },
         geometry: {
           type: 'Point',

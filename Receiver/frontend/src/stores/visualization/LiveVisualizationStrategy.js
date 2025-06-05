@@ -13,7 +13,7 @@ export function updateLiveDroneLocation(sender_id, position) {
   if(!dronePositionsMap.has(sender_id)) {
     dronePositionsMap.set(sender_id, {
       type: 'Feature',
-      properties: {serialNumber: sender_id},
+      properties: {sender_id: sender_id},
       geometry: { type: 'Point', coordinates: position },
     })
   }
