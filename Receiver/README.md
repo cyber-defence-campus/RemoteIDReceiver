@@ -53,7 +53,7 @@ docker-compose up build-frontend
 ## Running the Application
 You can run the app with:
 ```bash
-sudo python3 ./Receiver/backend/dronesniffer/main.py -p 80
+sudo python3 ./backend/dronesniffer/main.py -p 80
 ```
 The web interface will be available at `http://localhost:80` (or your specified port).
 
