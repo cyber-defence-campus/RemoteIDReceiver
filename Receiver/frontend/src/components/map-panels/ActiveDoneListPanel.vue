@@ -5,7 +5,7 @@
       <table class="w-full">
         <thead>
           <tr class="border-b border-gray-200">
-            <th>Serial Number</th>
+            <th>MAC-Address</th>
             <th title="Track Drone">🎯</th>
             <th title="Drone Info">📊</th>
             <th title="Show Flight Path">🚁</th>
@@ -17,7 +17,7 @@
           <tr v-for="drone in Array.from(activeDrones.values())" :key="drone"
             class="cursor-pointer">
             <td>
-              <span class="text-gray-700 text-sm">{{ drone.serial_number }}</span>
+              <span class="text-gray-700 text-sm">{{ drone.sender_id }}</span>
             </td>
             <td>
               <button title="Track drone" @click.stop.prevent="flyToDrone(drone)">🎯</button>
@@ -57,12 +57,12 @@ function flyToDrone(drone) {
 }
 
 function showDroneInfo(drone) {
-  mapStore.setInfoDrone(drone.serial_number)
+  mapStore.setInfoDrone(drone.sender_id)
 }
 
 async function updateDrone(drone) {
   if(!drone.home_position || !drone.pilot_position) {
-    const drone_dto = await getDrone(drone.serial_number)
+    const drone_dto = await getDrone(drone.sender_id)
     drone.home_position = drone_dto.home_position
     drone.pilot_position = drone_dto.pilot_position
   }

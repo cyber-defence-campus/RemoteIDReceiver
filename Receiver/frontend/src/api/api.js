@@ -29,8 +29,8 @@ async function getJsonResponse(url) {
   return (await client.get(url)).data
 }
 
-export const getDrone = async (serial_number) => {
-  const drone = await getJsonResponse(`/api/drones/${serial_number}`)
+export const getDrone = async (sender_id) => {
+  const drone = await getJsonResponse(`/api/drones/${sender_id}`)
   return new Drone(drone)
 }
 

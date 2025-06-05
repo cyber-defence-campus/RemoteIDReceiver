@@ -203,7 +203,7 @@ const initializeMap = async () => {
       const serialNumber = feature.properties.serialNumber
 
       mapStore.setInfoDrone(serialNumber)
-      const drone = activeDrones.value.find(drone => drone.serial_number === serialNumber)
+      const drone = activeDrones.value.find(drone => drone.sender_id === sender_id)
 
       const allShown = drone.show_home && drone.show_path && drone.show_pilot
 

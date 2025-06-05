@@ -54,6 +54,7 @@ class DroneDto(BaseModel):
     Represents a drone.
 
     Attributes:
+        sender_id (str): Unique identifier for the drone, typically its MAC address.
         serial_number (str): Serial number of the drone.
         position (Position): Position of the drone.
         pilot_position (Position, optional): Position of the pilot.
@@ -64,7 +65,12 @@ class DroneDto(BaseModel):
         x_speed (float, optional): drone speed in x direction.
         y_speed (float, optional): drone speed in y direction.
         z_speed (float, optional): drone speed in z direction.
+        spoofed (bool, optional): Indicates if the drone data is spoofed.
+        flight_purpose (str, optional): Purpose of the flight.
+        operator_id (str, optional): Operator ID of the drone.
+        ua_type (int, optional): Type of the unmanned aircraft.
     """
+    sender_id: str
     serial_number: str
     position: Position
     pilot_position: Optional[Position] = None
@@ -76,6 +82,10 @@ class DroneDto(BaseModel):
     y_speed: Optional[float] = None
     z_speed: Optional[float] = None
     spoofed: Optional[bool] = None
+    
+    flight_purpose : Optional[str] = None
+    operator_id: Optional[str] = None
+    ua_type: Optional[int] = None
 
 
 

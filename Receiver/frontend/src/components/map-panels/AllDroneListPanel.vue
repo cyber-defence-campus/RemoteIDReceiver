@@ -7,7 +7,7 @@
         v-for="drone in drones"
         :key="drone.id"
         class="bg-gray-100 p-4 rounded"
-        :class="{ active: infoDrone?.serial_number == drone.sender_id}"
+        :class="{ active: infoDrone?.sender_id == drone.sender_id}"
       >
         <span class="font-semibold text-xl">{{ drone.sender_id }}</span>
 

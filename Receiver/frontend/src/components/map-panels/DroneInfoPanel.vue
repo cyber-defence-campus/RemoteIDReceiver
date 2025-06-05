@@ -8,10 +8,42 @@
 
     <!-- Content -->
     <div class="flex flex-col gap-4">
-      <!-- Serial Number -->
-      <div class="flex justify-between items-center">
-        <span class="text-gray-600">Serial Number</span>
-        <span class="font-medium">{{ infoDrone.serial_number }}</span>
+
+
+
+      <div class="flex flex-col gap-2">
+
+        <!-- MAC address-->
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">MAC Address</span>
+          <span class="font-medium">{{ infoDrone.sender_id }}</span>
+        </div>
+
+        <!-- Serial Number -->
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Serial Number</span>
+          <span class="font-medium">{{ infoDrone.serial_number }}</span>
+        </div>
+
+        <!-- Operator ID -->
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Operator ID</span>
+          <span class="font-medium" v-if="infoDrone.operator_id">{{ infoDrone.operator_id }}</span>
+          <span class="font-medium text-red-900" v-else>Not Specified</span>
+        </div>
+
+        <!-- UAS Type -->
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">UAS Type</span>
+          <span class="font-medium">{{ uasTypeById(infoDrone.ua_type) }}</span>
+        </div>
+
+        <!-- Flight Purpose -->
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">Flight Purpose</span>
+          <span class="font-medium">{{ infoDrone.flight_purpose || 'Not specified' }}</span>
+        </div>
+
       </div>
 
       <!-- Positions -->
@@ -69,7 +101,7 @@
           <span>{{ formatTimestamp(flight) }}</span>
           <button
             title="Replay flight"
-            @click="replayFlight(infoDrone.serial_number, flight)"
+            @click="replayFlight(infoDrone.sender_id, flight)"
             class="p-2 hover:bg-gray-100 rounded"
           >
             ▶️
@@ -81,7 +113,7 @@
 </template>
 
 <script setup>
-import { onDeactivated, onMounted, ref, nextTick } from 'vue'
+import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { computedAsync } from '@vueuse/core'
 import { useMapStore } from '@/stores/map'
@@ -113,7 +145,7 @@ const emits = defineEmits(['fly-to'])
 // Computed properties
 const flights = computedAsync(async () => {
   if (!infoDrone.value) return []
-  return await getFlights(infoDrone.value.serial_number)
+  return await getFlights(infoDrone.value.sender_id)
 })
 
 // Methods
@@ -127,8 +159,9 @@ function closePanel() {
   infoDrone.value = null
 }
 
-async function replayFlight(serial_number, flight_date) {
-  const flight = await getFlight(serial_number, flight_date)
+async function replayFlight(sender_id, flight_date) {
+  const flight = await getFlight(sender_id, flight_date)
+  console.log(infoDrone.value, flight)
   mapStore.setReplayPath(infoDrone.value, flight)
   flyToDrone(infoDrone.value)
 }
@@ -150,5 +183,29 @@ function coordinateToText(decimal) {
 
 function formatTimestamp(timestamp) {
   return new Date(timestamp).toLocaleString()
+}
+
+
+function uasTypeById(uas_type_id) {
+  const uasTypeMap = {
+    0: "None or not declared",
+    1: "Aeroplane or fixed wing",
+    2: "Helicopter or multirotor",
+    3: "Gyroplane",
+    4: "Hybrid lift (fixed wing aircraft with vertical take-off and landing capability)",
+    5: "Ornithopter",
+    6: "Glider",
+    7: "Kite",
+    8: "Free balloon",
+    9: "Captive balloon",
+    10: "Airship (such as a blimp)",
+    11: "Free fall/parachute (unpowered)",
+    12: "Rocket",
+    13: "Tethered powered aircraft",
+    14: "Ground obstacle",
+    15: "Other",
+  };
+
+  return uasTypeMap[uas_type_id] || uasTypeMap[0];
 }
 </script>

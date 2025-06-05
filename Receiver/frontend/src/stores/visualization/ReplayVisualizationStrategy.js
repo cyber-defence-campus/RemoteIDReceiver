@@ -14,11 +14,11 @@ export class ReplayVisualizationStrategy {
       features: [{
         type: 'Feature',
         properties: {
-          serialNumber: drone.serial_number,
+          serialNumber: drone.sender_id,
         },
         geometry: {
           type: 'Point',
-          coordinates: [location.position.longitude, location.position.latitude],
+          coordinates: [location.position.lng, location.position.lat],
         },
       }],
     }
@@ -61,7 +61,7 @@ export class ReplayVisualizationStrategy {
         properties: {},
         geometry: {
           type: 'LineString',
-          coordinates: this.replay_path.value.map(location => [location.position.longitude, location.position.latitude]).slice(0, this.replay_time_step.value + 1),
+          coordinates: this.replay_path.value.map(location => [location.position.lng, location.position.lat]).slice(0, this.replay_time_step.value + 1),
         },
       }],
     }
