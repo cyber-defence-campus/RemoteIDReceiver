@@ -15,7 +15,7 @@ Modern drones are increasingly required to broadcast identification messages (Re
 
 ## 📦 Installation
 
-To install and run the project, please follow the instructions in the official [Receiver/README.md](https://github.com/cyber-defence-campus/RemoteIDReceiver/blob/main/README.md).
+To install and run the project, please follow the instructions in the official [Receiver/README.md](./Receiver/README.md).
 
 This includes setting up:
 
