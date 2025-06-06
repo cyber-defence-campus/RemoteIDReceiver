@@ -56,6 +56,7 @@ You can run the app with:
 sudo python3 ./backend/dronesniffer/main.py -p 80
 ```
 The web interface will be available at `http://localhost:80` (or your specified port).
+Documentation of the api will be available at `http://localhost:80/docs` (or your specified port).
 
 *Note: Sudo privileges are required for WiFi monitor mode access.*
 
