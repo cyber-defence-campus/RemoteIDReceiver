@@ -93,3 +93,7 @@ docker-compose up dev-frontend
    - Verify your internet connection
    - Check if your API key is valid (if using Google Maps)
    - Ensure the frontend was built successfully
+
+
+## Class Diagrams 
+UML Class Diagrams for this project were generated using [Enterprise Architect](https://www.sparxsystems.de/enterprise-architect/) and can be found under [uml_class_diagrams.qea](./uml_class_diagrams.qea).
