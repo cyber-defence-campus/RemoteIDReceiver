@@ -52,8 +52,8 @@ The application supports multiple map styles:
 
 ## Screenshots
 
-![Overview](./docs/img/overview.png 'Overview')
-![Replay](./docs/img/replay.png 'Replay')
+![Overview](../resources/images/screen_live.png 'Overview')
+![Replay](../resources/images/screen_replay.png 'Replay')
 
 ## Development
 

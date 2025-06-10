@@ -12,18 +12,18 @@ A web-based application for monitoring and tracking drones using WiFi signals. T
 ## Prerequisites
 - Docker and Docker Compose
 - Python 3.8 or higher
-- WiFi adapter with monitor mode support (e.g., [Archer T2U Plus](https://www.tp-link.com/de/home-networking/adapter/archer-t2u-plus/))
+- WiFi adapter with monitor mode support (e.g., [Archer T2U Plus](https://www.tp-link.com/de/home-networking/adapter/archer-t2u-plus/), or EDIMAX EW-7811Un)
 - Linux-based operating system (for WiFi monitor mode support)
 - Sudo privileges (required for monitor mode access)
 
-*Note:  Regular wifi cards often lack support of monitoring-mode. This mode is required to listen to all network traffic.*
+*Note:  Regular wifi cards often lack support of monitoring-mode. This mode is required to listen to all network traffic. Separate installation of drivers may be needed.*
 
 ## Installation
 
 ### 1. Clone the Repository
 ```bash
-git clone git@github.com:cyber-defence-campus/DroneIDReceiver.git
-cd RemoteIDReceiver
+git clone https://github.com/cyber-defence-campus/DroneIDReceiver.git
+cd Receiver
 ```
 
 ### 2. Install Python Dependencies
