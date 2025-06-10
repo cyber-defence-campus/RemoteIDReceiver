@@ -1,0 +1,149 @@
+from sqlalchemy.orm import Session
+from typing import List, Dict, Any
+from datetime import datetime, timedelta, timezone
+from .drone_service import DroneService
+from spoofing_detection import is_spoofed
+from models.direct_remote_id import (
+    BasicIdMessage, 
+    LocationMessage, 
+    SystemMessage, 
+    OperatorMessage,
+    SelfIdMessage
+)
+from models.dtomodels import DroneDto, Position, MinimalDroneDto, FlightPathPointDto
+import logging
+
+class DroneServiceAds(DroneService):
+    """Service for handling drone-related operations"""
+    
+    def __init__(self, db_enginge):
+        self.db_engine = db_enginge
+        
+    def get_all_drone_senders(self) -> List[MinimalDroneDto]:
+        # Location must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
+        with Session(self.db_engine) as session:
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                LocationMessage.sender_id,
+                LocationMessage.latitude,
+                LocationMessage.longitude,
+                LocationMessage.received_at
+            ).order_by(LocationMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.latitude,
+                subquery.c.longitude
+            ).group_by(subquery.c.sender_id).all()
+            
+            # Extract sender IDs from the result
+            return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
+
+    def get_active_drone_senders(self) -> List[MinimalDroneDto]:
+        # Location must be sent at least once every 3 seconds. Hence it is a good indicator of the drone's presence.
+        time_threshold = datetime.now(timezone.utc) - self._active_drone_max_age
+        
+        with Session(self.db_engine) as session:
+            # Get the latest location for each sender ID
+            subquery = session.query(
+                LocationMessage.sender_id,
+                LocationMessage.latitude,
+                LocationMessage.longitude,
+                LocationMessage.received_at
+            ).filter(LocationMessage.received_at > time_threshold)\
+             .order_by(LocationMessage.received_at.desc()).subquery()
+            
+            latest_locations = session.query(
+                subquery.c.sender_id,
+                subquery.c.latitude,
+                subquery.c.longitude
+            ).group_by(subquery.c.sender_id).all()
+
+            # Extract sender IDs from the result 
+            return [MinimalDroneDto(sender_id=message[0], position=Position(lat=message[1], lng=message[2])) for message in latest_locations]
+
+    def get_drone_state(self, sender_id: str) -> DroneDto:
+        with Session(self.db_engine) as session:
+            basic_id = session.query(BasicIdMessage).filter(BasicIdMessage.sender_id == sender_id).order_by(BasicIdMessage.received_at.desc()).first()
+            location = session.query(LocationMessage).filter(LocationMessage.sender_id == sender_id).order_by(LocationMessage.received_at.desc()).first()
+            system = session.query(SystemMessage).filter(SystemMessage.sender_id == sender_id).order_by(SystemMessage.received_at.desc()).first()
+            first_location = session.query(LocationMessage).filter(LocationMessage.sender_id == sender_id).order_by(LocationMessage.received_at.asc()).first()
+            operator = session.query(OperatorMessage).filter(OperatorMessage.sender_id == sender_id).order_by(OperatorMessage.received_at.desc()).first()
+            selfid = session.query(SelfIdMessage).filter(SelfIdMessage.sender_id == sender_id).order_by(SelfIdMessage.received_at.desc()).first()
+            
+        pilot_position = Position(lat=system.pilot_latitude, lng=system.pilot_longitude) if system else None
+        drone_position = Position(lat=location.latitude, lng=location.longitude) if location else None
+
+        return DroneDto(
+            sender_id=location.sender_id,
+            serial_number=basic_id.uas_id,
+            position=drone_position,
+            pilot_position=pilot_position,
+            home_position=Position(lat=first_location.latitude, lng=first_location.longitude) if first_location else None,
+            rotation=None,
+            altitude=location.height_above_takeoff if location else None,
+            height=location.height_above_takeoff if location else None,
+            x_speed=location.speed if location else None,
+            y_speed=location.vertical_speed if location else None,
+            z_speed=None,
+            spoofed=is_spoofed(drone_position, pilot_position) if drone_position and pilot_position else None,
+            flight_purpose=selfid.description if selfid else None,
+            operator_id=operator.operator_id if operator else None,
+            ua_type=basic_id.ua_type if basic_id else None
+        )
+    
+    def get_drone_flight_start_times(self, sender_id: str, activity_offset: timedelta) -> List[datetime]:
+        with Session(self.db_engine) as session:
+            query = session.query(LocationMessage) \
+                .filter(LocationMessage.sender_id == sender_id) \
+                .order_by(LocationMessage.received_at.asc())
+
+            flight_start_times = []
+            latest_timestamp = None
+
+            for drone in query:
+                if latest_timestamp is None or drone.received_at > latest_timestamp + activity_offset:
+                    latest_timestamp = drone.received_at
+                    flight_start_times.append(latest_timestamp)
+
+            return flight_start_times
+    
+    def get_flight_history(self, sender_id: str, flight: datetime, activity_offset: timedelta) -> List[FlightPathPointDto]:
+        with Session(self.db_engine) as session:
+            query = session.query(LocationMessage) \
+                .filter(LocationMessage.sender_id == sender_id) \
+                .filter(LocationMessage.received_at >= flight) \
+                .order_by(LocationMessage.received_at.asc())
+
+            latest_timestamp = None
+            path = []
+
+            for drone in query:
+                if latest_timestamp is None:
+                    latest_timestamp = drone.received_at
+
+                if drone.received_at > latest_timestamp + activity_offset:
+                    break
+            
+                path.append(FlightPathPointDto(
+                    timestamp=drone.received_at,
+                    position=Position(lat=drone.latitude, lng=drone.longitude),
+                    altitude=drone.height_above_takeoff
+                ))
+
+            return path
+
+    def exists(self, sender_id: str) -> bool:
+        """
+        Check if a database entry exists for the given sender_id.
+
+        Args:
+            sender_id: The sender's identifier (MAC address for WiFi)
+
+        Returns:
+            True if an entry exists, False otherwise.
+        """
+        with Session(self.db_engine) as session:
+            # Check if any BasicIdMessage exists with the given sender_id
+            exists = session.query(BasicIdMessage).filter(BasicIdMessage.sender_id == sender_id).first() is not None
+        return exists

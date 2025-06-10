@@ -6,3 +6,6 @@
 .idea/
 
 test.db
+
+__pycache__/
+*.egg-info/

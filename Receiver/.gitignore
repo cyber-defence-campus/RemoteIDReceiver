@@ -1,0 +1,10 @@
+.coverage/
+.pytest_cache/
+.scannerwork/
+.config.json
+.sonar-project.properties
+__pycache__/
+coverage/
+remoteid.db
+coverage.xml
+.env

@@ -1,17 +1,52 @@
 import argparse
-import atexit
 import logging
 import sys
-
+import colorlog
 import uvicorn
+import signal
 
-from api import app
+from api.api import app
 from info_handler import setup_database
 from settings import get_settings
-from sniffers import sniff_manager
+from sniffers import SniffManager
+from packet_processor import process_packet
+from parsing_queue import LimitedThreadPoolExecutor
 
-logging.basicConfig(level=logging.NOTSET, format='%(asctime)s %(module)s %(levelname)s %(message)s')
+####
+# Setup logging
+####
+formatter = colorlog.ColoredFormatter(
+        fmt="%(log_color)s[%(levelname)-8s]%(reset)s %(white)s%(asctime)s -  %(cyan)s%(name)s%(reset)s - %(message_log_color)s%(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        log_colors={
+            'DEBUG':    'blue',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'bold_red',
+        },
+        secondary_log_colors={
+            'message': {
+                'DEBUG':    'blue',
+                'INFO':     'white',
+                'WARNING':  'yellow',
+                'ERROR':    'red',
+                'CRITICAL': 'bold_red',
+            }
+        },
+        style='%'
+    )
 
+handler = colorlog.StreamHandler()
+handler.setFormatter(formatter)
+root_logger = logging.getLogger()
+root_logger.addHandler(handler)
+root_logger.setLevel(logging.INFO)
+
+### 
+# Logger for this file
+###
+LOG = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     """
@@ -27,11 +62,19 @@ def parse_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def shutdown() -> None:
+def shutdown(sniff_manager, parsing_queue) -> None:
     """
     Stops all services, handlers & connections on shutdown.
     """
-    sniff_manager.shutdown()
+    def stop_sniffing(signum, frame) -> None:
+        LOG.info("Received shutdown signal, stopping sniffing...")
+        sniff_manager.shutdown()
+
+        LOG.info("Stopping parsing queue...")
+        parsing_queue.stop()
+    
+    return stop_sniffing
+    
 
 
 def main():
@@ -44,20 +87,40 @@ def main():
     logging.info("Setting up database...")
     setup_database()
 
-    # register shutdown manager
-    atexit.register(shutdown)
+    
+    # Parsing Queue.
+    # Whenever a packet is received, it will be submitted to the queue
+    # and processed by the worker threads.
+    parsing_queue = LimitedThreadPoolExecutor(max_queue_size=0, max_workers=1000)
+    
+    # setup sniff manager
+    # whenever a message is sniffed, it will be passed to the parsing queue
+    def process_packet_wrapper(packet):
+        try:
+            parsing_queue.submit(process_packet, packet)
+        except Exception as e:
+            LOG.error(f"Error processing packet: {e}")
+
+    sniff_manager = SniffManager(on_packet_received=process_packet_wrapper)
+
+
+    # setup signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, shutdown(sniff_manager, parsing_queue))
+    signal.signal(signal.SIGTERM, shutdown(sniff_manager, parsing_queue))
 
     try:
         if file or lte:
-            logging.info(f"Started with file argument, starting parsing of {file}")
+            LOG.info(f"Started with file argument, starting parsing of {file}")
             sniff_manager.parse_file(file, lte=lte)
-
-        logging.info("Starting sniff manager...")
+        
+        
+        # Start sniffing on the interfaces 
         settings = get_settings()
-        sniff_manager.set_sniffing_interfaces(settings.interfaces)
+        interfaces = settings.interfaces 
+        sniff_manager.set_sniffing_interfaces(interfaces)
 
-        logging.info(f"Starting API on port {port}...")
-        uvicorn.run(app, host='0.0.0.0', port=port)
+        LOG.info(f"Starting API on port {port}...")
+        uvicorn.run(app(sniff_manager), host='0.0.0.0', port=port)
     except KeyboardInterrupt:
         sys.exit(0)
 
