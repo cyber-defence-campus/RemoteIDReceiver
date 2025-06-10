@@ -6,6 +6,7 @@ The project builds on the original [Remote ID Receiver](https://github.com/cyber
 
 **Disclaimer:** This repository was created as part of a Bachelor thesis. It is not meant to be maintained nor updated. It is a proof of concept and is not intended for production use. The authors do not take any responsibility or liability for the use of the software. Please exercise caution and use at your own risk.
 
+**Note:** The old version of the app can be found on the [legacy branch](https://github.com/cyber-defence-campus/RemoteIDReceiver/tree/legacy-v1) of this project.
 ## Project Summary
 
 Modern drones are increasingly required to broadcast identification messages (Remote ID) in open formats over Wi-Fi or Bluetooth. This system captures, decodes, stores, and visualizes such messages using:
