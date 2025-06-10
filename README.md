@@ -32,13 +32,14 @@ This includes setting up:
 
 Live view of all currently broadcasting drones, updated in real-time.
 
-![Monitor view](Receiver/resources/images/screen_live.png "Monitor view")
+
+<img src="Receiver/resources/images/screen_live.png" width="500">
 
 ### Replay Mode
 
 Reconstruct and analyze past drone broadcasts based on stored data.
 
-![Replay view](Receiver/resources/images/screen_replay.png "Replay view")
+<img src="Receiver/resources/images/screen_replay.png" width="500">
 
 ## 👥 Authors & Supervision
 

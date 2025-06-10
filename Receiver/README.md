@@ -2,6 +2,9 @@
 
 A web-based application for monitoring and tracking drones using WiFi signals. This application captures drone telemetry data through a WiFi adapter in monitor mode and displays the information on an interactive map interface.
 
+[Installation](#installation)
+[Usage](#usage)
+
 ## Features
 - Real-time drone detection and tracking
 - Interactive map visualization
@@ -22,7 +25,8 @@ A web-based application for monitoring and tracking drones using WiFi signals. T
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/cyber-defence-campus/DroneIDReceiver.git
+git clone https://github.com/cyber-defence-campus/RemoteIDReceiver.git
+
 cd Receiver
 ```
 
@@ -60,6 +64,11 @@ Documentation of the api will be available at `http://localhost:80/docs` (or you
 
 *Note: Sudo privileges are required for WiFi monitor mode access.*
 
+
+### Run as service
+<details>
+<summary><strong>Details</strong></summary>
+
 ### Service Mode (Systemd Service)
 1. Start the service:
 ```bash
@@ -75,12 +84,34 @@ sudo systemctl stop dsniffer.service
 ```bash
 sudo systemctl status dsniffer.service
 ```
+</details>
+
+### Send RemoteID packets
+
+The Receiver can be tested with the different files in `resources/wifi/send.py`  or by using a [RemoteIDSpoofer](https://github.com/cyber-defence-campus/droneRemoteIDSpoofer).
+
+```
+sudo python3 RemoteIDReceiver/Receiver/resources/wifi/send.py -i
+<interface name>
+```
+
+
+## Usage
+After accessing the app in the browser, the interface that will be used to monitor can be selected from the top left settings menu:
+
+<img src="resources/images/initial_config.png" width="500">
+
 
 ## Frontend Development
+
+<details>
+<summary><strong>Details</strong></summary>
+
 If you want to develop on the frontend, you can spawn a development-server with:
 ```bash
 docker-compose up dev-frontend
 ```
+</details>
 
 ## Troubleshooting
 
