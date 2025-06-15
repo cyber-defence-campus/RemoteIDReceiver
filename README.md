@@ -1,4 +1,4 @@
-# 🛰️ Drone Remote ID Monitoring System
+# Drone Remote ID Monitoring System
 
 This repository introduces an extended **Remote ID Monitoring Platform** developed as part of a bachelor thesis at the **Lucerne University of Applied Sciences and Arts**, in collaboration with the **Cyber Defence Campus**. The system enables offline-capable, real-time and replayable monitoring of civilian drone broadcasts via WiFi as required under the **ASD-STAN prEN 4709-002** standard.
 
@@ -41,7 +41,7 @@ Reconstruct and analyze past drone broadcasts based on stored data.
 
 <img src="Receiver/resources/images/screen_replay.png" width="500">
 
-## 👥 Authors & Supervision
+## Authors & Supervision
 
 This project was implemented as part of a **Bachelor thesis** in the BSc AIML program at Lucerne University in collaboration with the Cyber-Defence Campus in Switzerland.
 
