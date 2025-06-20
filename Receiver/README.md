@@ -2,8 +2,8 @@
 
 A web-based application for monitoring and tracking drones using WiFi signals. This application captures drone telemetry data through a WiFi adapter in monitor mode and displays the information on an interactive map interface.
 
-[Installation](#installation)
-[Usage](#usage)
+- [Installation](#installation)
+- [Usage](#usage)
 
 ## Features
 - Real-time drone detection and tracking
@@ -45,7 +45,7 @@ cp .env.example .env
 
 2. Configure map service:
 - Default: Free map with basic details
-- Google Maps: Uncomment `FRONTEND_MAP_STYLE=google` and add your [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+- Google Maps: Uncomment `FRONTEND_MAP_STYLE=google` and add your [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Make sure your API keys are activated and you enabled [Map Tiles API](https://developers.google.com/maps/documentation/tile/cloud-setup#enabling-apis). 
 - Self-hosted: Advanced users can configure their own tile server for offline functionality [here](README_TILESERVER.md).
 
 ### 4. Build the Frontend
