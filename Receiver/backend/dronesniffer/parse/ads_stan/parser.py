@@ -16,7 +16,7 @@ import struct
 from scapy.packet import Packet
 
 class DirectRemoteIdMessageParser(Parser):
-    oui: List[str] = ["FA:0B:BC", "50:6F:9A"]  
+    oui: List[str] = ["FA:0B:BC", "50:6F:9A", "90:3A:E6"]  
     
     __strategies = {
         0x0: BasicIdParsingStrategy(),
