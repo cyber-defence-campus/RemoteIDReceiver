@@ -27,7 +27,7 @@ A web-based application for monitoring and tracking drones using WiFi signals. T
 ```bash
 git clone https://github.com/cyber-defence-campus/RemoteIDReceiver.git
 
-cd Receiver
+cd RemoteIDReceiver/Receiver
 ```
 
 ### 2. Install Python Dependencies
