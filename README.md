@@ -1,8 +1,10 @@
 # Drone Remote ID Monitoring System
 
-This repository introduces an extended **Remote ID Monitoring Platform** developed as part of a bachelor thesis at the **Lucerne University of Applied Sciences and Arts**, in collaboration with the **Cyber Defence Campus**. The system enables offline-capable, real-time and replayable monitoring of civilian drone broadcasts via WiFi as required under the **ASD-STAN prEN 4709-002** standard.
+This repository introduces an extended **Remote ID Monitoring Platform** developed as part of a bachelor thesis at the **Lucerne University of Applied Sciences and Arts**, in collaboration with the **Cyber Defence Campus**. The system enables offline-capable, real-time and replayable monitoring of civilian drone broadcasts via WiFi beacons as required under the **ASD-STAN prEN 4709-002** standard.
 
 The project builds on the original [Remote ID Receiver](https://github.com/cyber-defence-campus/RemoteIDReceiver/tree/legacy-v1), adding full ASD-Stan support, multithreaded performance, and a user-friendly offline mapping frontend.
+
+As future work remains supporting BLE and WiFi NaN as transport method of the DroneID broadcast.
 
 **Disclaimer:** This repository was created as part of a Bachelor thesis. It is not meant to be maintained nor updated. It is a proof of concept and is not intended for production use. The authors do not take any responsibility or liability for the use of the software. Please exercise caution and use at your own risk.
 
