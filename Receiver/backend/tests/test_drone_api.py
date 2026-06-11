@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from models.dtomodels import MinimalDroneDto, Position, DroneDto, FlightPathPointDto
 from typing import List
@@ -8,7 +9,9 @@ from datetime import datetime, timedelta
 
 class TestDroneApi(unittest.TestCase):
     def setUp(self):
-        self.client = TestClient(router)
+        app = FastAPI()
+        app.include_router(router)
+        self.client = TestClient(app)
         
     @patch('api.drone_api.drone_serive_ads')
     @patch('api.drone_api.drone_service_dji')

@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from datetime import datetime
 from api.ads_stan_api import router
@@ -7,7 +8,9 @@ from models.direct_remote_id import BasicIdMessage, LocationMessage, SelfIdMessa
 
 class TestAdsStanApi(unittest.TestCase):
     def setUp(self):
-        self.client = TestClient(router)
+        app = FastAPI()
+        app.include_router(router)
+        self.client = TestClient(app)
     
     @patch('api.ads_stan_api.Session')
     def test_get_basic_id_messages(self, mock_session):

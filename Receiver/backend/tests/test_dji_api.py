@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch, MagicMock
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from datetime import datetime
 from api.dji_api import router
@@ -7,7 +8,9 @@ from models.direct_remote_id import DjiMessage
 
 class TestDjiApi(unittest.TestCase):
     def setUp(self):
-        self.client = TestClient(router)
+        app = FastAPI()
+        app.include_router(router)
+        self.client = TestClient(app)
     
     @patch('api.dji_api.Session')
     def test_get_all_dji_messages_no_filter(self, mock_session):
