@@ -12,6 +12,7 @@ class Settings(BaseModel):
         activity_offset_in_m (int): Number of minutes after last received package a drone is considered active.
         drone_size_in_rem (int): Drone size in UI in rem.
         interfaces (list[str]): Name of all interfaces that are sniffed.
+        ble_interfaces (list[str]): Bluetooth adapters used for BLE Remote ID reception.
         performance_mode (bool): Repress animations and simplify UI when performance mode is on.
     """
     model_config = ConfigDict(validate_assignment=True)
@@ -20,6 +21,7 @@ class Settings(BaseModel):
     activity_offset_in_m: int = 10
     drone_size_in_rem: int = 5
     interfaces: list[str] = []
+    ble_interfaces: list[str] = []
     performance_mode: bool = False
 
     @field_validator("google_maps_api_key")

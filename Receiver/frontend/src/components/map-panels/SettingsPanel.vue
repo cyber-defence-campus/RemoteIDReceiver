@@ -7,11 +7,26 @@
     </div>
 
     <div class="mb-8">
-      <h3 class="font-bold text-xl">Interfaces</h3>
+      <h3 class="font-bold text-xl">Wi-Fi interfaces</h3>
 
       <div v-for="iface in interfaces" :key="iface" class="flex flex-row basis-1/2 justify-start">
         <label :for="idFor(iface)" style="justify-self: end">{{ iface }}</label>
         <input :id="idFor(iface)" v-model="settings.interfaces" type="checkbox" :value="iface" />
+      </div>
+    </div>
+
+    <div class="mb-8">
+      <h3 class="font-bold text-xl">Bluetooth LE adapters</h3>
+      <p class="text-sm">Receives ASTM Remote ID BLE advertisements without connecting to devices.</p>
+
+      <div v-for="adapter in bluetoothInterfaces" :key="adapter" class="flex flex-row basis-1/2 justify-start">
+        <label :for="idForBluetooth(adapter)" style="justify-self: end">{{ adapter }}</label>
+        <input
+          :id="idForBluetooth(adapter)"
+          v-model="settings.ble_interfaces"
+          type="checkbox"
+          :value="adapter"
+        />
       </div>
     </div>
 
@@ -31,12 +46,13 @@
   </div>
 </template>
 <script setup>
-import { getInterfaces } from '@/api/api'
+import { getBluetoothInterfaces, getInterfaces } from '@/api/api'
 import { useSettingsStore } from '@/stores/settings'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 const open = ref(false)
 const interfaces = ref([])
+const bluetoothInterfaces = ref([])
 
 const store = useSettingsStore()
 const { settings } = storeToRefs(store)
@@ -45,6 +61,7 @@ const { loadSettings } = store
 async function reset() {
   await loadSettings()
   interfaces.value = await getInterfaces()
+  bluetoothInterfaces.value = await getBluetoothInterfaces()
 }
 
 async function updateSettings() {
@@ -54,6 +71,7 @@ async function updateSettings() {
 
 reset()
 const idFor = (iface) => `iface-${iface}`
+const idForBluetooth = (adapter) => `ble-adapter-${adapter}`
 </script>
 <style>
 input,

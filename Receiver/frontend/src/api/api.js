@@ -26,6 +26,8 @@ export const getDrone = async (sender_id) => {
 
 export const getSettings = async () => getJsonResponse('/api/settings')
 export const getInterfaces = async () => getJsonResponse('/api/settings/interfaces')
+export const getBluetoothInterfaces = async () =>
+  getJsonResponse('/api/settings/bluetooth-interfaces')
 export const getActiveDrones = async () => getJsonResponse('/api/drones/active')
 export const getAllDrones = async () => getJsonResponse('/api/drones/all')
 export const getHistory = async (serial_number) =>

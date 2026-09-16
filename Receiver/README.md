@@ -1,6 +1,6 @@
 # Drone Monitoring Web Application
 
-A web-based application for monitoring and tracking drones using WiFi signals. This application captures drone telemetry data through a WiFi adapter in monitor mode and displays the information on an interactive map interface.
+A web-based application for monitoring and tracking drones using WiFi and Bluetooth Low Energy (BLE) Remote ID broadcasts. It captures drone telemetry through a WiFi adapter in monitor mode and/or a BlueZ BLE adapter, then displays it on an interactive map.
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -16,6 +16,7 @@ A web-based application for monitoring and tracking drones using WiFi signals. T
 - Docker and Docker Compose
 - Python 3.8 or higher
 - WiFi adapter with monitor mode support (e.g., [Archer T2U Plus](https://www.tp-link.com/de/home-networking/adapter/archer-t2u-plus/), or EDIMAX EW-7811Un)
+- Bluetooth adapter supported by BlueZ (optional, for BLE Remote ID reception)
 - Linux-based operating system (for WiFi monitor mode support)
 - Sudo privileges (required for monitor mode access)
 
@@ -99,7 +100,22 @@ sudo python3 RemoteIDReceiver/Receiver/resources/wifi/send.py -i
 ## Usage
 After accessing the app in the browser, the interface that will be used to monitor can be selected from the top left settings menu:
 
+Select Wi-Fi interfaces and/or Bluetooth LE adapters independently. BLE reception passively scans ASTM Remote ID advertisements (service UUID `0xFFFA`); it does not connect to nearby devices or change adapter mode.
+
 <img src="resources/images/initial_config.png" width="500">
+
+### Test Wi-Fi and BLE together
+
+On a Linux receiver, start the application, then select the monitor-mode Wi-Fi adapter and the BLE adapter (for example, `wlan1` and `hci0`) in Settings. The two ingestors run concurrently.
+
+The companion [`droneRemoteIDSpoofer`](https://github.com/cyber-defence-campus/droneRemoteIDSpoofer) repository includes a matching dual-transport scenario:
+
+```bash
+cd ../../droneRemoteIDSpoofer
+sudo .venv/bin/python3 spoof_drones.py -c scenarios/dual_transport.json
+```
+
+Adjust `wlan1` and `hci0` in that scenario to match the transmitter hardware. The receiver decodes both the spoofer's BLE legacy advertisements and its BLE extended message packs, as well as its Wi-Fi beacons.
 
 
 ## Frontend Development

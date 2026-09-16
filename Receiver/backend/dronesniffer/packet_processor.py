@@ -41,23 +41,28 @@ def process_packet(packet: Packet) -> None:
             # Parse the drone packet
             parsed_message = parser.from_wifi(vendor_spec.info, layer_oui)
             if parsed_message:
-                LOG.debug(f"Parsed message: {parsed_message}")
-
-                # Map the parsed message to the DB model
-                mac_from = packet.addr2
-                db_models = mapper.to_db_models(parsed_message, mac_from)
-                LOG.debug(f"DB models: {db_models}")
-
-                # Save the message to the database
-                _save_db_models(db_models)
-
-                # if dji or location message, broadcast the message
-                _broadcast_location(db_models)
+                _process_parsed_message(parsed_message, packet.addr2)
             break
         else:
             vendor_spec: Dot11EltVendorSpecific = vendor_spec.payload.getlayer(
                 Dot11EltVendorSpecific
             )
+
+
+def process_bluetooth_advertisement(address: str, service_data: bytes) -> None:
+    """Process ASTM Remote ID BLE Service Data received from *address*."""
+    parsed_message = parser.from_bluetooth(service_data)
+    if parsed_message:
+        _process_parsed_message(parsed_message, address)
+
+
+def _process_parsed_message(parsed_message, sender_id: str) -> None:
+    """Send a transport-independent parsed Remote ID message downstream."""
+    LOG.debug(f"Parsed message: {parsed_message}")
+    db_models = mapper.to_db_models(parsed_message, sender_id)
+    LOG.debug(f"DB models: {db_models}")
+    _save_db_models(db_models)
+    _broadcast_location(db_models)
 
 
 def _get_vendor_specific(packet: Packet) -> Dot11EltVendorSpecific:

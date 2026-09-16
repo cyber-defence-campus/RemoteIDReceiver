@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from scapy.interfaces import get_if_list
 from settings import get_settings, save_settings, Settings
+from sniffers import get_bluetooth_interfaces
 
 router = APIRouter()
 
@@ -27,6 +28,7 @@ def init_router(sniff_manager):
         """
         save_settings(settings)
         sniff_manager.set_sniffing_interfaces(settings.interfaces)
+        sniff_manager.set_ble_interfaces(settings.ble_interfaces)
         return settings
 
 
@@ -35,6 +37,12 @@ def init_router(sniff_manager):
         """
         Returns all interfaces found on the device.
         """
-        return get_if_list() 
+        return get_if_list()
+
+
+    @router.get("/settings/bluetooth-interfaces", response_model=list[str])
+    def get_bluetooth_adapters() -> list[str]:
+        """Return local BlueZ adapters that can be selected for BLE scanning."""
+        return get_bluetooth_interfaces()
     
     return router

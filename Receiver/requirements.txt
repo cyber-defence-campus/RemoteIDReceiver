@@ -1,6 +1,7 @@
 fastapi>=0.95.2
 pydantic>=1.10.7
 scapy>=2.5.0
+bleak>=0.22.0
 sqlmodel>=0.0.8
 uvicorn>=0.22.0
 websockets>=11.0.3

@@ -65,4 +65,14 @@ class DirectRemoteIdMessageParser(Parser):
         """
         return DirectRemoteIdMessageParser.parse(packet[8:])
 
+    @staticmethod
+    def from_bluetooth(service_data: bytes) -> Optional[ParsedMessage]:
+        """Parse ASTM Remote ID BLE Service Data.
 
+        BLE advertisements prepend the Open Drone ID application code (0x0D)
+        and a rolling message counter to the same 25-byte messages/message
+        packs used by the Wi-Fi transport.
+        """
+        if len(service_data) < 3 or service_data[0] != 0x0D:
+            return None
+        return DirectRemoteIdMessageParser.parse(service_data[2:])

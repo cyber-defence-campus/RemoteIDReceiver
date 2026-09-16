@@ -37,13 +37,21 @@ class ParserService:
         """
         if oui not in self._parsers:
             return None
-            
+
         parser_class, provider = self._parsers[oui]
-        
+
         try:
             return parser_class.from_wifi(packet, oui)
         except Exception as e:
             logging.error(f"Unexpected error parsing {provider} message: {e}")
+            return None
+
+    def from_bluetooth(self, service_data: bytes) -> Optional[ParsedMessage]:
+        """Parse BLE Service Data advertised under the ASTM Remote ID UUID."""
+        try:
+            return DirectRemoteIdMessageParser.from_bluetooth(service_data)
+        except Exception as e:
+            logging.error(f"Unexpected error parsing BLE Remote ID message: {e}")
             return None
 
     def is_supported_protocol(self, oui: str) -> bool:
@@ -59,4 +67,4 @@ class ParserService:
         return oui in self._parsers
 
 # Create a singleton instance for easy access
-parser = ParserService() 
+parser = ParserService()

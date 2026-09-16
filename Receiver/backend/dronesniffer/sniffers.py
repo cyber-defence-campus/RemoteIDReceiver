@@ -1,12 +1,14 @@
 import time
 import logging
 import os
+from pathlib import Path
 from threading import Thread, Event
 from scapy.layers.dot11 import Dot11Elt,Dot11EltVendorSpecific
 from scapy.sendrecv import AsyncSniffer
 from scapy.config import conf
 from scapy.packet import Packet
 from typing import Callable 
+from ble import BleRemoteIdSniffer
 
 __all__ = ["SniffManager"]
 
@@ -172,14 +174,35 @@ class SniffManager:
     Can start/stop new/existing sniffers.
     """
 
-    def __init__(self, on_packet_received: Callable[[Packet], None]) -> None:
+    def __init__(
+        self,
+        on_packet_received: Callable[[Packet], None],
+        on_ble_advertisement_received: Callable[[str, bytes], None] = None,
+    ) -> None:
         """
         Args:
             on_packet_received (Callable[[Packet], None]): Callback function to process received packets.
         """
         self.sniffers = {}
+        self.ble_sniffers = {}
         self.file_sniffers = []
         self.on_packet_received = on_packet_received
+        self.on_ble_advertisement_received = (
+            on_ble_advertisement_received or on_packet_received
+        )
+
+    def set_ble_interfaces(self, interfaces: list[str]) -> None:
+        """Start BLE Remote ID scanners for exactly the selected BlueZ adapters."""
+        LOG.info(f"Setting BLE sniffing interfaces to {interfaces}...")
+        for interface in interfaces:
+            if interface not in self.ble_sniffers:
+                sniffer = BleRemoteIdSniffer(interface, self.on_ble_advertisement_received)
+                sniffer.start()
+                self.ble_sniffers[interface] = sniffer
+        for interface in self.ble_sniffers.copy():
+            if interface not in interfaces:
+                self.ble_sniffers[interface].stop()
+                del self.ble_sniffers[interface]
 
     def start(self, interface: str) -> bool:
         """
@@ -264,9 +287,20 @@ class SniffManager:
         for interface in self.sniffers.copy():
             self.stop(interface)
 
+        for interface in self.ble_sniffers.copy():
+            self.ble_sniffers[interface].stop()
+            del self.ble_sniffers[interface]
+
         # stop all WiFiFileSniffers
         for sniffer in self.file_sniffers:
             sniffer.stop()
         self.file_sniffers = []
         LOG.info("All sniffers were stopped successfully.")
 
+
+def get_bluetooth_interfaces() -> list[str]:
+    """Return local BlueZ HCI adapter names without executing system commands."""
+    bluetooth_root = Path("/sys/class/bluetooth")
+    if not bluetooth_root.is_dir():
+        return []
+    return sorted(path.name for path in bluetooth_root.glob("hci*"))

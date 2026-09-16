@@ -9,7 +9,7 @@ from api.api import app
 from info_handler import setup_database
 from settings import get_settings
 from sniffers import SniffManager
-from packet_processor import process_packet
+from packet_processor import process_packet, process_bluetooth_advertisement
 from parsing_queue import LimitedThreadPoolExecutor
 
 ####
@@ -101,7 +101,16 @@ def main():
         except Exception as e:
             LOG.error(f"Error processing packet: {e}")
 
-    sniff_manager = SniffManager(on_packet_received=process_packet_wrapper)
+    def process_bluetooth_advertisement_wrapper(address, service_data):
+        try:
+            parsing_queue.submit(process_bluetooth_advertisement, address, service_data)
+        except Exception as e:
+            LOG.error(f"Error processing BLE advertisement: {e}")
+
+    sniff_manager = SniffManager(
+        on_packet_received=process_packet_wrapper,
+        on_ble_advertisement_received=process_bluetooth_advertisement_wrapper,
+    )
 
 
     # setup signal handlers for graceful shutdown
@@ -118,6 +127,7 @@ def main():
         settings = get_settings()
         interfaces = settings.interfaces 
         sniff_manager.set_sniffing_interfaces(interfaces)
+        sniff_manager.set_ble_interfaces(settings.ble_interfaces)
 
         LOG.info(f"Starting API on port {port}...")
         uvicorn.run(app(sniff_manager), host='0.0.0.0', port=port)
