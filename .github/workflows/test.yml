@@ -1,4 +1,4 @@
-name: Run Pytest with HTML Coverage Report
+name: Tests
 
 on: [push]
 
@@ -32,3 +32,33 @@ jobs:
         with:
           name: html-coverage-report
           path: Receiver/htmlcov/
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: Receiver/frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: Receiver/frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: Receiver/frontend
+        run: npm run lint:check
+
+      - name: Run unit tests
+        working-directory: Receiver/frontend
+        run: npx vitest run
+
+      - name: Build
+        working-directory: Receiver/frontend
+        run: npm run build

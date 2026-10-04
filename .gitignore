@@ -1,0 +1,8 @@
+# Local config and secrets
+.env
+.env.*
+!.env.example
+.config.json
+
+# Local databases
+*.db

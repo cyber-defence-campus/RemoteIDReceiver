@@ -1,6 +1,10 @@
+import re
 from typing import Optional
 
 from pydantic import BaseModel, field_validator, ConfigDict
+
+# Linux interface names: max 15 chars, must not start with '-' (would be parsed as an option)
+INTERFACE_NAME_PATTERN = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.\-]{0,14}$")
 
 
 class Settings(BaseModel):
@@ -41,4 +45,12 @@ class Settings(BaseModel):
     def drone_size_must_be_in_range(cls, value: int) -> None:
         if not 1 <= value <= 10:
             raise ValueError("must be between 1 and 10")
+        return value
+
+    @field_validator("interfaces")
+    @classmethod
+    def interface_names_must_be_valid(cls, value: list[str]) -> list[str]:
+        for interface in value:
+            if not INTERFACE_NAME_PATTERN.fullmatch(interface):
+                raise ValueError(f"invalid interface name {interface!r}")
         return value

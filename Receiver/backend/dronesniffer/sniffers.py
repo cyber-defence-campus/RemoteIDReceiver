@@ -1,12 +1,15 @@
 import time
 import logging
-import os
+import subprocess
 from threading import Thread, Event
 from scapy.layers.dot11 import Dot11Elt,Dot11EltVendorSpecific
 from scapy.sendrecv import AsyncSniffer
 from scapy.config import conf
+from scapy.interfaces import get_if_list
 from scapy.packet import Packet
 from typing import Callable 
+
+from models.settings import INTERFACE_NAME_PATTERN
 
 __all__ = ["SniffManager"]
 
@@ -29,12 +32,16 @@ def switch_dev_mode(device: str, mode: str) -> bool:
     if not (mode == "monitor" or mode == "managed"):
         raise ValueError(f"Only modes 'monitor' and 'managed' are supported, not '{mode}'")
 
+    if not INTERFACE_NAME_PATTERN.fullmatch(device) or device not in get_if_list():
+        LOG.warning(f"Refusing to switch mode of unknown or invalid interface {device!r}")
+        return False
+
     try:
-        os.system(f"ip link set {device} down")
-        os.system(f"iwconfig {device} mode {mode}")
-        os.system(f"ip link set {device} up")
+        subprocess.run(["ip", "link", "set", device, "down"], check=True)
+        subprocess.run(["iwconfig", device, "mode", mode], check=True)
+        subprocess.run(["ip", "link", "set", device, "up"], check=True)
         return True
-    except:
+    except (OSError, subprocess.CalledProcessError):
         # switch failed, return false
         return False
 

@@ -46,3 +46,15 @@ class TestSettings:
     def test_invalid_drone_size(self, drone_size):
         with pytest.raises(ValidationError):
             Settings(drone_size_in_rem=drone_size)
+
+    @pytest.mark.parametrize("interface", ["wlan0", "wlx00c0ca123456", "eth0.100", "wl_p-1"])
+    def test_valid_interface(self, interface):
+        assert Settings(interfaces=[interface]).interfaces == [interface]
+
+    @pytest.mark.parametrize(
+        "interface",
+        ["", "eth0; touch x", "eth23 || touch x;#", "$(id)", "`id`", "wlan0 up", "-h", "a/b", "abcdefghijklmnop"]
+    )
+    def test_invalid_interface(self, interface):
+        with pytest.raises(ValidationError):
+            Settings(interfaces=[interface])
