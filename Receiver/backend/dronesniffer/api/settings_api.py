@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from scapy.config import conf
 from scapy.interfaces import get_if_list
 from settings import get_settings, save_settings, Settings
 
@@ -34,7 +35,15 @@ def init_router(sniff_manager):
     def get_interfaces() -> list[str]:
         """
         Returns all interfaces found on the device.
+
+        Reloads Scapy's cached interface list first so adapters that were
+        plugged in after the process started are included.
         """
-        return get_if_list() 
+        try:
+            conf.ifaces.reload()
+        except Exception:
+            # Fall back to the cached list rather than failing the endpoint.
+            pass
+        return get_if_list()
     
     return router

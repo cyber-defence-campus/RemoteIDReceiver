@@ -24,7 +24,7 @@
   <!-- Settings Icon -->
   <div
     v-else
-    @click="open = true"
+    @click="openSettings"
     class="w-16 h-16 m-4 shadow-xl rounded-full text-center content-center cursor-pointer select-none"
   >
     ⚙️
@@ -42,9 +42,18 @@ const store = useSettingsStore()
 const { settings } = storeToRefs(store)
 const { loadSettings } = store
 
+async function refreshInterfaces() {
+  interfaces.value = await getInterfaces()
+}
+
 async function reset() {
   await loadSettings()
-  interfaces.value = await getInterfaces()
+  await refreshInterfaces()
+}
+
+async function openSettings() {
+  open.value = true
+  await refreshInterfaces()
 }
 
 async function updateSettings() {
