@@ -32,7 +32,17 @@ def switch_dev_mode(device: str, mode: str) -> bool:
     if not (mode == "monitor" or mode == "managed"):
         raise ValueError(f"Only modes 'monitor' and 'managed' are supported, not '{mode}'")
 
-    if not INTERFACE_NAME_PATTERN.fullmatch(device) or device not in get_if_list():
+    if not INTERFACE_NAME_PATTERN.fullmatch(device):
+        LOG.warning(f"Refusing to switch mode of unknown or invalid interface {device!r}")
+        return False
+
+    # Refresh Scapy's interface cache so hot-plugged adapters are recognized.
+    try:
+        conf.ifaces.reload()
+    except Exception:
+        pass
+
+    if device not in get_if_list():
         LOG.warning(f"Refusing to switch mode of unknown or invalid interface {device!r}")
         return False
 
