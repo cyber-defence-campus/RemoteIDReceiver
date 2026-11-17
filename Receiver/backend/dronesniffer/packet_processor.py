@@ -3,6 +3,7 @@ import logging
 from scapy.layers.dot11 import Dot11EltVendorSpecific
 from scapy.packet import Packet
 
+import trust
 from info_handler import save_messages
 from parse.parser import Parser
 from parse.parser_service import parser
@@ -42,6 +43,10 @@ def process_packet(packet: Packet) -> None:
             parsed_message = parser.from_wifi(vendor_spec.info, layer_oui)
             if parsed_message:
                 LOG.debug(f"Parsed message: {parsed_message}")
+
+                # Spoofing checks for ASTM F3411 (ADS-STAN) transmitters
+                if parsed_message.provider == "ADS-STAN":
+                    trust.observe(packet)
 
                 # Map the parsed message to the DB model
                 mac_from = packet.addr2

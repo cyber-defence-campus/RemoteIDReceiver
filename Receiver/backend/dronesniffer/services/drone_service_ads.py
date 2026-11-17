@@ -3,6 +3,7 @@ from typing import List, Dict, Any
 from datetime import datetime, timedelta, timezone
 from .drone_service import DroneService
 from spoofing_detection import is_spoofed
+import trust
 from models.direct_remote_id import (
     BasicIdMessage, 
     LocationMessage, 
@@ -74,6 +75,11 @@ class DroneServiceAds(DroneService):
         pilot_position = Position(lat=system.pilot_latitude, lng=system.pilot_longitude) if system else None
         drone_position = Position(lat=location.latitude, lng=location.longitude) if location else None
 
+        spoofed = is_spoofed(drone_position, pilot_position) if drone_position and pilot_position else None
+        verdict = trust.verdict(sender_id)
+        if verdict and verdict.verdict == "spoofed":
+            spoofed = True
+
         return DroneDto(
             sender_id=location.sender_id,
             serial_number=basic_id.uas_id,
@@ -86,10 +92,12 @@ class DroneServiceAds(DroneService):
             x_speed=location.speed if location else None,
             y_speed=location.vertical_speed if location else None,
             z_speed=None,
-            spoofed=is_spoofed(drone_position, pilot_position) if drone_position and pilot_position else None,
+            spoofed=spoofed,
             flight_purpose=selfid.description if selfid else None,
             operator_id=operator.operator_id if operator else None,
-            ua_type=basic_id.ua_type if basic_id else None
+            ua_type=basic_id.ua_type if basic_id else None,
+            trust=verdict.verdict if verdict else None,
+            trust_reasons=list(verdict.reasons) if verdict else None
         )
     
     def get_drone_flight_start_times(self, sender_id: str, activity_offset: timedelta) -> List[datetime]:

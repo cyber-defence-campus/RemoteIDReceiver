@@ -44,6 +44,17 @@
           <span class="font-medium">{{ infoDrone.flight_purpose || 'Not specified' }}</span>
         </div>
 
+        <!-- Spoofing check (remoteid) -->
+        <div v-if="infoDrone.trust" class="flex justify-between items-center">
+          <span class="text-gray-600">Spoofing check</span>
+          <span
+            class="font-medium"
+            :class="{ 'text-red-900': infoDrone.trust !== 'plausible' }"
+            :title="(infoDrone.trust_reasons || []).join(', ')"
+            >{{ infoDrone.trust }}</span
+          >
+        </div>
+
       </div>
 
       <!-- Positions -->

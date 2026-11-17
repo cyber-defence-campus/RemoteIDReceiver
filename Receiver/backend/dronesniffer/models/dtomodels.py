@@ -69,6 +69,8 @@ class DroneDto(BaseModel):
         flight_purpose (str, optional): Purpose of the flight.
         operator_id (str, optional): Operator ID of the drone.
         ua_type (int, optional): Type of the unmanned aircraft.
+        trust (str, optional): Spoofing check verdict for the transmitter: plausible, suspicious or spoofed.
+        trust_reasons (list[str], optional): Why the transmitter is suspicious or spoofed, e.g. ["teleport"].
     """
     sender_id: str
     serial_number: str
@@ -86,6 +88,8 @@ class DroneDto(BaseModel):
     flight_purpose : Optional[str] = None
     operator_id: Optional[str] = None
     ua_type: Optional[int] = None
+    trust: Optional[str] = None
+    trust_reasons: Optional[list[str]] = None
 
 
 
