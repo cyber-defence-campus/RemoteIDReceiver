@@ -57,12 +57,23 @@ class DirectRemoteIdMessageParser(Parser):
         parsed_message = strategy.parse(payload)
         return parsed_message
 
+    # Vendor type of the Remote ID vendor specific element (ASTM F3411, ASD-STAN prEN 4709-002).
+    # Phones and access points send other elements under the Wi-Fi Alliance OUI 50:6F:9A
+    # (Wi-Fi Direct 0x09, NAN 0x13, ...), which are not Remote ID.
+    REMOTE_ID_VENDOR_TYPE = 0x0D
+
     @staticmethod
     def from_wifi(packet: Packet, oui: str) -> Optional[ParsedMessage]:
         """
         @returns
             - ParsedMessage: Parsed message
+            - None: the element is not a Remote ID element
         """
+        # packet: OUI (3 bytes), vendor type, message counter, message pack
+        if oui in ("FA:0B:BC", "50:6F:9A") and (
+            len(packet) < 8 or packet[3] != DirectRemoteIdMessageParser.REMOTE_ID_VENDOR_TYPE
+        ):
+            return None
         return DirectRemoteIdMessageParser.parse(packet[8:])
 
 
