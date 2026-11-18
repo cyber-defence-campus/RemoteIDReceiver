@@ -1,8 +1,29 @@
 from .base import ParsingStrategy
 from ..messages.location_vector import LocationVectorMessage
 import struct
-import math
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from typing import Optional
+
+TIMESTAMP_UNKNOWN = 0xFFFF
+
+
+def decode_timestamp(tenths: int, now: Optional[datetime] = None) -> Optional[datetime]:
+    """
+    The Location message carries tenths of a second since the start of the current UTC hour
+    (ASTM F3411). 0xFFFF means unknown. The hour is taken from the receiver clock: the one
+    within 30 minutes of now, so a message from the end of the previous hour, or from a
+    transmitter whose clock is a little ahead, gets the right hour and date.
+    """
+    if tenths == TIMESTAMP_UNKNOWN or tenths >= 36000:
+        return None
+    now = now or datetime.now(timezone.utc)
+    timestamp = now.replace(minute=0, second=0, microsecond=0) + timedelta(milliseconds=tenths * 100)
+    if timestamp - now > timedelta(minutes=30):
+        timestamp -= timedelta(hours=1)
+    elif now - timestamp > timedelta(minutes=30):
+        timestamp += timedelta(hours=1)
+    return timestamp
+
 
 class LocationVectorParsingStrategy(ParsingStrategy):
     def parse(self, payload: bytes) -> LocationVectorMessage:
@@ -36,13 +57,6 @@ class LocationVectorParsingStrategy(ParsingStrategy):
         speed_acc = baro_speed_acc & 0b00001111 # bits 3..0
         timestamp_acc = reserved & 0b00001111 # bits 3..0
 
-        min_ = math.floor(timestamp / 600)
-        sec = round((timestamp - min_ * 600) / 10)
-        now = datetime.now()
-        tenth_second = now.minute * 600 + now.second * 10
-        if timestamp > tenth_second:
-            timestamp = now.replace(hour=now.hour-1, minute=min_, second=sec)
-        else:
-            timestamp = now.replace(minute=min_, second=sec)
+        timestamp = decode_timestamp(timestamp)
         
         return LocationVectorMessage(status, is_reserved, height_type, track_direction, speed, vertical_speed, latitude, longitude, barometric_pressure, geodetic_altitude, height, timestamp, h_acc, v_acc, speed_acc,baro_acc, timestamp_acc)
