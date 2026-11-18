@@ -1,4 +1,6 @@
 from dataclasses import dataclass, field
+from datetime import datetime
+from typing import Optional
 from .direct_remote_id import DirectRemoteIdMessage
 @dataclass
 class LocationVectorMessage(DirectRemoteIdMessage):
@@ -35,7 +37,8 @@ class LocationVectorMessage(DirectRemoteIdMessage):
   altitude_geodetic: int # −1 000–31 767m
   height_above_takeoff: int # -1000–31 767m
   
-  timestamp: int
+  # UTC time of the position, None when the transmitter reports it as unknown
+  timestamp: Optional[datetime]
 
   # Horizontal accuracy
   ## 0: ≥ 18,52 km (10 NM) or unknown

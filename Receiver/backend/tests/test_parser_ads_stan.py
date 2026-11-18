@@ -1,6 +1,8 @@
 import struct 
 import pytest
+from datetime import datetime, timezone
 from parse.ads_stan.parser import DirectRemoteIdMessageParser
+from parse.ads_stan.strategies.location_vector import decode_timestamp
 
 class TestAdsStanParser:
   
@@ -14,7 +16,7 @@ class TestAdsStanParser:
 
     return header + id_ua_type + uas_id + pad
 
-  def _setup_packet_type_1(self):
+  def _setup_packet_type_1(self, timestamp=3611):
     header = struct.pack('B', 0x11) # type 1 version 1
      
     status_flags = '00100110' # status: airborne, height_type: AGL, direction_sentiment: 1, speed_multiplier: 0
@@ -50,7 +52,7 @@ class TestAdsStanParser:
     baro_accuracy_flags = '10000100'
     baro_accuracy_flags = int(baro_accuracy_flags, 2).to_bytes(1, 'little')
     
-    timestamp = 3611 # should parse to 6 mins, 1.1s
+    # 3611 should parse to 6 mins, 1.1s
     timestamp = struct.pack("<H", timestamp)
     
     timestamp_accuracy = '00000100'
@@ -160,6 +162,34 @@ class TestAdsStanParser:
 
     
     
+  def test_location_timestamp_is_utc_in_the_nearest_hour(self):
+    now = datetime(2026, 11, 17, 14, 20, 0, tzinfo=timezone.utc)
+    assert decode_timestamp(3611, now) == datetime(2026, 11, 17, 14, 6, 1, 100000, tzinfo=timezone.utc)
+    # last half second of a minute (used to round to second=60 and raise)
+    assert decode_timestamp(599, now) == datetime(2026, 11, 17, 14, 0, 59, 900000, tzinfo=timezone.utc)
+    # message from the end of the previous hour, received just after midnight (used to raise on hour=-1)
+    just_after_midnight = datetime(2026, 11, 17, 0, 0, 2, tzinfo=timezone.utc)
+    assert decode_timestamp(35995, just_after_midnight) == datetime(2026, 11, 16, 23, 59, 59, 500000, tzinfo=timezone.utc)
+    # transmitter clock slightly ahead of ours across the hour boundary
+    assert decode_timestamp(5, datetime(2026, 11, 17, 14, 59, 59, 900000, tzinfo=timezone.utc)) == datetime(2026, 11, 17, 15, 0, 0, 500000, tzinfo=timezone.utc)
+    # 0xFFFF is "unknown" in ASTM F3411
+    assert decode_timestamp(0xFFFF, now) is None
+
+  @pytest.mark.parametrize("tenths", [599, 35999, 0xFFFF])
+  def test_location_timestamp_edge_values_parse(self, tenths):
+    parsed = DirectRemoteIdMessageParser.parse(self._setup_packet_type_1(timestamp=tenths))
+    assert parsed.latitude == pytest.approx(47.2)
+    if tenths == 0xFFFF:
+      assert parsed.timestamp is None
+    else:
+      assert parsed.timestamp.second == 59
+
+  def test_message_pack_with_unknown_location_time_keeps_basic_id(self):
+    packet = self._setup_packet_type_f([self._setup_packet_type_0("pack-id"), self._setup_packet_type_1(timestamp=0xFFFF)])
+    parsed = DirectRemoteIdMessageParser.parse(packet)
+    assert parsed.messages[0].uas_id == "pack-id"
+    assert parsed.messages[1].timestamp is None
+
   def test_message_type_3(self):
     description = "test-id-3"
     description_type = 201
